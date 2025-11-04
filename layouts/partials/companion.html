@@ -1,0 +1,6 @@
+{{ if isset .Params "companion" }}
+<div class="alert alert-info" role="alert">
+    {{ $url := urls.Parse .Page.Permalink }}
+    This page has an <a href="{{ printf "%s%s" .Site.Params.companionHost $url.Path }}">internal companion page</a> which contains additional information.
+</div>
+{{ end }}
