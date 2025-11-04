@@ -62,3 +62,32 @@ deploy_hugo_tag:
     - !reference [.rules, mr_manual]
     - !reference [.rules, push]
     - !reference [.rules, web]
+
+build:
+  script:
+    - |
+      npm install
+      make build-host
+  artifacts:
+    paths:
+      - public
+  rules:
+    - !reference [.rules, mr]
+    - !reference [.rules, push]
+    - !reference [.rules, web]
+
+pages:
+  script:
+    - echo "Deploying pages..."
+  needs: [build]
+  pages: true
+  environment:
+    name: production
+    url: https://hummingbird-project.io/
+  artifacts:
+    paths:
+      - public
+  rules:
+    - !reference [.rules, mr_manual]
+    - !reference [.rules, push]
+    - !reference [.rules, web]
