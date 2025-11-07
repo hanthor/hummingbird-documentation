@@ -1,0 +1,14 @@
+/* below md, the sidebar is in a hamburger menu */
+@include media-breakpoint-up(md) {
+  .td-sidebar-nav {
+    font-size: 14px;  /* body is 16px */
+  }
+}
+
+.hum-footer {
+  background-color: rgba($primary, 0.2);
+}
+
+.lead .td-search__input:not(:focus) {
+  background: white;
+}

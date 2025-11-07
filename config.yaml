@@ -1,0 +1,106 @@
+---
+baseURL: https://hummingbird-project.io/
+
+title: Project Hummingbird
+
+enableRobotsTXT: true
+
+# Hugo allows theme composition (and inheritance). The precedence is from left
+# to right.
+theme: [github.com/google/docsy, github.com/google/docsy/dependencies]
+
+disableKinds: [taxonomy]
+
+# Highlighting config
+pygmentsCodeFences: true
+pygmentsUseClasses: false
+# Use the new Chroma Go highlighter in Hugo.
+pygmentsUseClassic: false
+# pygmentsOptions: linenos=table
+# See https://help.farbox.com/pygments.html
+pygmentsStyle: tango
+
+module:
+  imports:
+    - path: gitlab.com/redhat/hummingbird/containers
+      mounts:
+        - {source: 'documentation', target: content/docs/background/containers, includeFiles: "*.md"}
+
+# Image processing configuration.
+imaging:
+  resampleFilter: CatmullRom
+  quality: 75
+  anchor: smart
+
+markup:
+  goldmark:
+    renderer:
+      unsafe: true
+  highlight:
+    style: tango
+
+params:
+  companionHost: https://internal-documentation.hummingbird-project.io
+  copyright: The Hummingbird Project Authors
+
+  # Enable Lunr.js offline search
+  offlineSearch: true
+
+  # Custom variables
+  # Theme params
+  time_format_blog: 2006.01.02
+  time_format_default: 2006.01.02
+
+  # User interface configuration
+  ui:
+    # Show the side bar menu in its compact state.
+    sidebar_menu_compact: true
+    # Indicate that there are subpages
+    sidebar_menu_foldable: true
+    # Disable the About link in the site footer
+    footer_about_enable: false
+
+  home:
+    - title: Using a container image
+      url: /docs/using/
+      url_text: Start here if you want to use a Project Hummingbird container image
+      icon: fas fa-microchip
+    - title: Contributing to a container image
+      url: /docs/contributing/
+      url_text: Start here if you want to contribute to a Project Hummingbird container image
+      icon: fas fa-flask
+    - title: Operate Hummingbird infrastructure
+      url: /docs/operating/
+      url_text: Start here if you want to operate Project Hummingbird infrastructure
+      icon: fab fa-gitlab
+
+  links:
+    left:
+      title: General information
+      links:
+        - name: Container images
+          url: https://quay.io/organization/hummingbird/
+          desc: quay.io
+        - name: Code repositories
+          url: https://gitlab.com/redhat/hummingbird
+          desc: gitlab.com
+        - name: Issue tracker
+          url: https://issues.redhat.com/projects/HUM/summary
+          desc: issues.redhat.com
+    right:
+      title: Contact
+      links:
+        - name: Report an issue
+          url: https://issues.redhat.com/projects/HUM/summary
+          icon: fa-solid fa-book
+
+menu:
+  main:
+    - name: Container images
+      post: ' <i class="fa-solid fa-up-right-from-square"></i>'
+      url: https://quay.io/organization/hummingbird/
+      weight: 20
+    - name: Code
+      post: ' <i class="fa-solid fa-up-right-from-square"></i>'
+      url: https://gitlab.com/redhat/hummingbird
+      weight: 30
