@@ -1,0 +1,95 @@
+---
+workflow:
+  rules:
+    # merge requests
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event' &&
+          $CI_MERGE_REQUEST_EVENT_TYPE != 'merge_train'
+    # merge trains
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event' &&
+          $CI_MERGE_REQUEST_EVENT_TYPE == 'merge_train'
+    # tip of the default branch
+    - if: $CI_PIPELINE_SOURCE == 'web' &&
+          $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - if: $CI_PIPELINE_SOURCE == 'push' &&
+          $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    # scheduled pipelines
+    - if: $CI_PIPELINE_SOURCE == 'schedule'
+
+stages:
+  - test
+
+default:
+  image: quay.io/hummingbird-ci/gitlab-ci:latest
+  tags: [small-runner]
+  retry:
+    max: 2
+    when:
+      - runner_system_failure
+      - stuck_or_timeout_failure
+      - unknown_failure
+      - api_failure
+      - job_execution_timeout
+
+.rules:
+  mr: {if: $CI_PIPELINE_SOURCE == 'merge_request_event'}
+  push: {if: $CI_PIPELINE_SOURCE == 'push' && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH}
+  web: {if: $CI_PIPELINE_SOURCE == 'web' && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH}
+  schedule: {if: $CI_PIPELINE_SOURCE == 'schedule' && $CI_JOB_NAME == $ONLY_JOB_NAME}
+  mr_manual:
+    if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+    when: manual
+    allow_failure: true  # allow to merge MR without running this job
+
+check:
+  script:
+    - make check-host
+  rules:
+    - !reference [.rules, mr]
+
+deploy_hugo_tag:
+  environment:
+    name: hugo-tag-deployment
+    action: access
+  script:
+    - |
+      DEPLOY_GIT_TAG=v1.0.0
+      git tag -f "${DEPLOY_GIT_TAG}"
+      git push --force --no-verify \
+        "https://git:${HUGO_TAG_DEPLOYMENT_GITLAB_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}.git" \
+        "${DEPLOY_GIT_TAG}"
+  allow_failure: true
+  rules:
+    - !reference [.rules, mr_manual]
+    - !reference [.rules, push]
+    - !reference [.rules, web]
+
+build:
+  script:
+    - |
+      npm install
+      sed -i "/baseURL/s|: .*|: https://redhat.gitlab.io/hummingbird/documentation/|" config.yaml
+      sed -i "/companionHost/s|: .*|: https://redhat.gitlab.io/hummingbird/internal-documentation/|" config.yaml
+      make build-host
+  artifacts:
+    paths:
+      - public
+  rules:
+    - !reference [.rules, mr]
+    - !reference [.rules, push]
+    - !reference [.rules, web]
+
+pages:
+  script:
+    - echo "Deploying pages..."
+  needs: [build]
+  pages: true
+  environment:
+    name: production
+    url: https://redhat.gitlab.io/hummingbird/documentation/
+  artifacts:
+    paths:
+      - public
+  rules:
+    - !reference [.rules, mr_manual]
+    - !reference [.rules, push]
+    - !reference [.rules, web]
