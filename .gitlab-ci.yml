@@ -79,6 +79,7 @@ build:
 pages:
   script:
     - echo "Deploying pages..."
+    - cp _redirects public/_redirects
   needs: [build]
   pages: true
   environment:
