@@ -1,0 +1,5 @@
+http://project-hummingbird.io/* https://hummingbird-project.io/:splat 301
+https://project-hummingbird.io/* https://hummingbird-project.io/:splat 301
+http://hummingbird-project.org/* https://hummingbird-project.io/:splat 301
+https://hummingbird-project.org/* https://hummingbird-project.io/:splat 301
+https://redhat.gitlab.io/hummingbird/documentation/* https://hummingbird-project.io/:splat 301
