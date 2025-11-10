@@ -27,6 +27,7 @@ workflow:
 
 stages:
   - test
+  - deploy
 
 default:
   image: quay.io/hummingbird-ci/gitlab-ci:latest
@@ -140,3 +141,17 @@ stop-mr:
     action: stop
   rules:
     - !reference [.rules, mr_manual]
+
+trigger_internal_documentation:
+  stage: deploy
+  needs: [deploy_hugo_tag]
+  variables:
+    PARENT_PROJECT_PATH: $CI_PROJECT_PATH
+  trigger:
+    project: redhat/hummingbird/internal-documentation
+    strategy: depend
+  allow_failure: true
+  rules:
+    - !reference [.rules, push]
+    - !reference [.rules, web]
+    - !reference [.rules, downstream]
