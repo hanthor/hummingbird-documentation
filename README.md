@@ -2,6 +2,8 @@
 
 This repository contains the Hugo-based documentation site for Project Hummingbird.
 
+The rendered documentation is available at <https://hummingbird-project.io/>.
+
 ## Local Development
 
 ### Prerequisites
@@ -25,12 +27,13 @@ Check documentation for linting issues:
 make check
 ```
 
-### Advanced: Local Container Repository
+### Advanced: Local Repositories
 
 To develop with local changes to the containers repository:
 
 ```bash
-CONTAINERS_REPO_PATH=/path/to/containers make serve
+export CONTAINERS_REPO_PATH=/path/to/containers
+make serve
 ```
 
 This uses your local clone of the [containers repository][containers-repo]

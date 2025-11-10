@@ -1,11 +1,20 @@
+comma:= ,
+space:= $() $()
+
 PODMAN_ADDITIONAL_ARGS :=
+HUGO_MODULE_REPLACEMENTS :=
+
 ifdef CONTAINERS_REPO_PATH
 	ifdef RUNNING_IN_CONTAINER
-		export HUGO_MODULE_REPLACEMENTS := gitlab.com/redhat/hummingbird/containers -> /containers
+		HUGO_MODULE_REPLACEMENTS += gitlab.com/redhat/hummingbird/containers->/containers
 	else
-		PODMAN_ADDITIONAL_ARGS := -v $(CONTAINERS_REPO_PATH):/containers:z -e CONTAINERS_REPO_PATH=$(CONTAINERS_REPO_PATH)
-		export HUGO_MODULE_REPLACEMENTS := gitlab.com/redhat/hummingbird/containers -> $(CONTAINERS_REPO_PATH)
+		PODMAN_ADDITIONAL_ARGS += -v $(CONTAINERS_REPO_PATH):/containers:z -e CONTAINERS_REPO_PATH=$(CONTAINERS_REPO_PATH)
+		HUGO_MODULE_REPLACEMENTS += gitlab.com/redhat/hummingbird/containers->$(basename $(CONTAINERS_REPO_PATH))
 	endif
+endif
+
+ifneq ($(HUGO_MODULE_REPLACEMENTS),)
+	export HUGO_MODULE_REPLACEMENTS := $(subst $(space),$(comma),$(HUGO_MODULE_REPLACEMENTS))
 endif
 
 PULL ?= newer
@@ -19,23 +28,26 @@ container:
 .PHONY: check-host check
 check-host:
 	markdownlint *.md
-
 check:
 	$(PODMAN_RUN) $(PODMAN_IMAGE) make check-host
 
 .PHONY: build-host build
 build-host:
 	hugo -d public
-
 build:
 	$(PODMAN_RUN) $(PODMAN_IMAGE) make build-host
 
 .PHONY: server-host serve
 serve-host:
 	trap '$(MAKE) clean; exit 0' SIGINT; hugo serve --bind 0.0.0.0
-
 serve:
 	$(PODMAN_RUN) -p 1313:1313 $(PODMAN_IMAGE) make serve-host
+
+.PHONY: setup-host setup
+setup-host:
+	npm install --no-package-lock
+setup:
+	$(PODMAN_RUN) $(PODMAN_IMAGE) make setup-host
 
 .PHONY: clean
 clean:

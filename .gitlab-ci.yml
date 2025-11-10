@@ -14,9 +14,20 @@ workflow:
           $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
     # scheduled pipelines
     - if: $CI_PIPELINE_SOURCE == 'schedule'
+    # multi-project pipelines
+    - if: $CI_PIPELINE_SOURCE == 'pipeline' &&
+          $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH &&
+          $PARENT_PROJECT_PATH != null && $PARENT_PROJECT_PATH != ''
+      variables:
+        PIPELINE_NAME: 'Downstream pipeline for $PARENT_PROJECT_PATH'
+    - if: $CI_PIPELINE_SOURCE == 'pipeline' &&
+          $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      variables:
+        PIPELINE_NAME: 'Downstream pipeline for an unknown parent project'
 
 stages:
   - test
+  - deploy
 
 default:
   image: quay.io/hummingbird-ci/gitlab-ci:latest
@@ -35,6 +46,7 @@ default:
   push: {if: $CI_PIPELINE_SOURCE == 'push' && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH}
   web: {if: $CI_PIPELINE_SOURCE == 'web' && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH}
   schedule: {if: $CI_PIPELINE_SOURCE == 'schedule' && $CI_JOB_NAME == $ONLY_JOB_NAME}
+  downstream: {if: $CI_PIPELINE_SOURCE == 'pipeline'}
   mr_manual:
     if: $CI_PIPELINE_SOURCE == 'merge_request_event'
     when: manual
@@ -66,15 +78,22 @@ deploy_hugo_tag:
 build:
   script:
     - |
-      npm install
+      make setup-host
       make build-host
+      # Build MR-specific version with modified baseURL
+      if [ -n "${CI_MERGE_REQUEST_IID:-}" ]; then
+        sed -i "/baseURL/s|$|/mr-$CI_MERGE_REQUEST_IID|" config.yaml
+        hugo -d public_mr
+      fi
   artifacts:
     paths:
       - public
+      - public_mr
   rules:
     - !reference [.rules, mr]
     - !reference [.rules, push]
     - !reference [.rules, web]
+    - !reference [.rules, downstream]
 
 pages:
   script:
@@ -91,3 +110,48 @@ pages:
     - !reference [.rules, mr_manual]
     - !reference [.rules, push]
     - !reference [.rules, web]
+    - !reference [.rules, downstream]
+
+deploy-mr:
+  script:
+    - rm -rf public
+    - mv public_mr public
+  needs: [build]
+  pages:
+    path_prefix: mr-$CI_MERGE_REQUEST_IID
+  environment:
+    name: mr-$CI_MERGE_REQUEST_IID
+    url: https://hummingbird-project.io/mr-$CI_MERGE_REQUEST_IID
+    on_stop: stop-mr
+    auto_stop_in: 1 week
+  artifacts:
+    paths:
+      - public
+  rules:
+    - !reference [.rules, mr]
+
+stop-mr:
+  script:
+    - echo "Stopping MR environment"
+  needs: []
+  variables:
+    GIT_STRATEGY: none
+  environment:
+    name: mr-$CI_MERGE_REQUEST_IID
+    action: stop
+  rules:
+    - !reference [.rules, mr_manual]
+
+trigger_internal_documentation:
+  stage: deploy
+  needs: [deploy_hugo_tag]
+  variables:
+    PARENT_PROJECT_PATH: $CI_PROJECT_PATH
+  trigger:
+    project: redhat/hummingbird/internal-documentation
+    strategy: depend
+  allow_failure: true
+  rules:
+    - !reference [.rules, push]
+    - !reference [.rules, web]
+    - !reference [.rules, downstream]

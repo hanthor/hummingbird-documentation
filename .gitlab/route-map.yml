@@ -1,0 +1,7 @@
+---
+- source: /content\/(.*)\/_index\.md/  # content/docs/using/_index.md
+  public: '\1/'                        # docs/using/
+- source: /content\/(.*)\/index\.md/   # content/docs/using/getting-started/index.md
+  public: '\1/'                        # docs/using/getting-started/
+- source: /content\/(.*)\.md/          # content/docs/using/getting-started.md
+  public: '\1/'                        # docs/using/getting-started/
