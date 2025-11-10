@@ -1,0 +1,52 @@
+{{ define "main" }}
+{{ $global := . }}
+{{ $promo_image := (.Page.Resources.ByType "image").GetMatch "**background*" }}
+{{ with $promo_image }}
+{{ $promo_image_big := (.Fill "1920x1080 smart") }}
+{{ $promo_image_small := (.Fill "960x540 smart") }}
+<link rel="preload" as="image" href="{{ $promo_image_small.RelPermalink }}" media="(max-width: 1200px)">
+<link rel="preload" as="image" href="{{ $promo_image_big.RelPermalink }}" media="(min-width: 1200px)">
+<style>
+#td-cover-block-1 {
+    background-image: url({{ $promo_image_small.RelPermalink }});
+}
+@media only screen and (min-width: 1200px) {
+    #td-cover-block-1 {
+        background-image: url({{ $promo_image_big.RelPermalink }});
+    }
+}
+</style>
+{{ end }}
+<section id="td-cover-block-1" class="row td-cover-block td-cover-block--height-auto js-td-cover td-overlay td-overlay--dark -bg-dark">
+  <div class="container td-overlay__inner">
+    <div class="row justify-content-center">
+      <div class="col-12">
+        <div class="text-center">
+          <h1 class="display-4 pb-4">Project Hummingbird</h1>
+          <h2 class="mb-0"> minimal, hardened, and secure container images</h2>
+        </div>
+      </div>
+      <div class="col-md-8 col-lg-6 col-xl-4">
+        <div class="pt-5 lead text-body">
+          <form>{{ partial "search-input.html" $global }}</form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="row td-box td-box--white td-box--gradient td-box--height-auto">
+  <div class="col">
+    <div class="row">
+      {{ range .Site.Params.home }}
+        <div class="col-lg-4 mb-5 mb-lg-0 text-center position-relative">
+          <div class="mb-4 h1">
+            <i class="{{ .icon }}"></i>
+          </div>
+          <h4 class="h3">{{ .title }}</h4>
+          <p><a class="stretched-link" href="{{ ref $global .url }}">{{ .url_text }} …</a></p>
+        </div>
+      {{ end }}
+    </div>
+  </div>
+</section>
+{{ end }}
