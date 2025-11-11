@@ -5,7 +5,8 @@ description: >-
 weight: 20
 ---
 
-Hummingbird provides different variants and base images to support various use cases while maintaining security by default.
+Hummingbird provides different variants and base images to support various use cases while
+maintaining security by default.
 
 ## Application Image Variants
 
@@ -29,9 +30,12 @@ Some images provide more variants such as [PHP's FPM variant](https://quay.io/re
 
 ## Base Runtime Images
 
-For multi-stage builds where you compile code in a builder variant, you can use default variants as the base image.  For some toolchains, we recommend using the `core-runtime` base image for your final stage:
+For multi-stage builds where you compile code in a builder variant, you can use default variants as
+the base image.  For some toolchains, we recommend using the `core-runtime` base image for your
+final stage:
 
-- **`core-runtime`**: Minimal runtime environment with essential libraries (glibc, etc.). Use for compiled binaries from languages like C, Go, and Rust.
+- **`core-runtime`**: Minimal runtime environment with essential libraries (glibc, etc.). Use for
+  compiled binaries from languages like C, Go, and Rust.
 
 ## Tagging Strategy
 
@@ -41,9 +45,12 @@ Images follow a version-based tagging scheme for stability:
 - `:<version>` - Specific version (e.g., `:3.11`, `:16`)
 - `:<version>-builder` - Builder variant of specific version
 
-**Recommendation**: For best practices on deciding which tags or even digests to use, refer to the following article: [How to name, version, and reference container images](https://developers.redhat.com/articles/2025/01/28/how-name-version-and-reference-container-images)
+**Recommendation**: For best practices on deciding which tags or even digests to use, refer to the
+following article: [How to name, version, and reference container
+images](https://developers.redhat.com/articles/2025/01/28/how-name-version-and-reference-container-images)
 
-Use versioned tags in production for reproducible builds. The `:latest` tag is convenient for development but may introduce unexpected changes.
+Use versioned tags in production for reproducible builds. The `:latest` tag is convenient for
+development but may introduce unexpected changes.
 
 Check [Quay.io](https://quay.io/organization/hummingbird) for available version tags for each image.
 

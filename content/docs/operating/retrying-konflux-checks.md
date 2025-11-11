@@ -5,7 +5,8 @@ description: >-
 weight: 20  # Keep pages sorted alphabetically by title; use increments of 10
 ---
 
-When Konflux CI checks fail on merge requests, you can automatically retrigger them using the provided retrigger script.
+When Konflux CI checks fail on merge requests, you can automatically retrigger them using the
+provided retrigger script.
 
 ## Prerequisites
 
