@@ -25,6 +25,7 @@ module:
     - path: gitlab.com/redhat/hummingbird/containers
       mounts:
         - {source: 'documentation', target: content/docs/background/containers, includeFiles: "*.md"}
+        - {source: 'CONTRIBUTING.md', target: content/docs/contributing/quickstart.md}
 
 # Image processing configuration.
 imaging:
