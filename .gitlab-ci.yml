@@ -82,7 +82,7 @@ build:
       make build-host
       # Build MR-specific version with modified baseURL
       if [ -n "${CI_MERGE_REQUEST_IID:-}" ]; then
-        sed -i "/baseURL/s|$|/mr-$CI_MERGE_REQUEST_IID|" config.yaml
+        sed -Ei "/baseURL/s|/?$|/mr-$CI_MERGE_REQUEST_IID|" config.yaml
         hugo -d public_mr
       fi
   artifacts:

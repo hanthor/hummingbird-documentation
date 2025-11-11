@@ -4,14 +4,7 @@ This repository contains the Hugo-based documentation site for Project Hummingbi
 
 The rendered documentation is available at <https://hummingbird-project.io/>.
 
-## Local Development
-
-### Prerequisites
-
-- `podman`
-- `make`
-
-### Basic Usage
+## Quick Start
 
 Start the development server:
 
@@ -19,7 +12,7 @@ Start the development server:
 make serve
 ```
 
-The site will be available at the [local development server][local-server].
+The site will be available at <http://localhost:1313/>.
 
 Check documentation for linting issues:
 
@@ -27,17 +20,8 @@ Check documentation for linting issues:
 make check
 ```
 
-### Advanced: Local Repositories
+## Full Documentation
 
-To develop with local changes to the containers repository:
-
-```bash
-export CONTAINERS_REPO_PATH=/path/to/containers
-make serve
-```
-
-This uses your local clone of the [containers repository][containers-repo]
-instead of fetching from GitLab.
-
-[local-server]: http://localhost:1313/
-[containers-repo]: https://gitlab.com/redhat/hummingbird/containers
+For complete documentation on contributing to the documentation, see the
+[Writing Documentation](https://hummingbird-project.io/l/writing-documentation)
+guide.
