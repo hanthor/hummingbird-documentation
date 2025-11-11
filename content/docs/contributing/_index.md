@@ -1,7 +1,9 @@
 ---
 title: Contributing to a Project Hummingbird container image
-linktitle: Contributors
+linktitle: For Contributors
 weight: 20
+no_list: true
+aliases: [/l/contributing-images]
 ---
 
 Welcome to the Project Hummingbird contributor documentation. This section provides guides and

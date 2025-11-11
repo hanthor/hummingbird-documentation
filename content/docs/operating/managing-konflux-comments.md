@@ -1,8 +1,9 @@
 ---
 title: Managing Konflux Comments
 description: >-
-  Clean up and manage excessive Konflux comments on merge requests using the comment deletion tool.
-weight: 20
+  Clean up and manage excessive Konflux comments on merge requests using the comment deletion
+  tool.
+weight: 10  # Keep pages sorted alphabetically by title; use increments of 10
 ---
 
 When Konflux comments become excessive on merge requests, you can clean them up using the provided comment deletion tool.

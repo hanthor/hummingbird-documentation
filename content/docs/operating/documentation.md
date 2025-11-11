@@ -2,7 +2,7 @@
 title: Writing Documentation
 description: >-
   How to contribute to the Project Hummingbird documentation.
-weight: 70
+weight: 40  # Keep pages sorted alphabetically by title; use increments of 10
 aliases: [/l/writing-documentation]
 ---
 
