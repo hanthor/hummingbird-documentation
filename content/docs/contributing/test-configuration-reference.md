@@ -25,15 +25,16 @@ inline:
 
 The test runner provides these environment variables to test commands:
 
-| Variable           | Description                                           |
-|--------------------|-------------------------------------------------------|
-| `TEST_IMAGE`       | The container image being tested                      |
-| `TEST_IMAGES`      | Associative array with all `group/variant` image URLs |
-| `TEST_IMAGES_PATH` | Path to file containing serialized TEST_IMAGES array  |
-| `TEST_ENGINE`      | Container engine to use (`podman` or `docker`)        |
-| `TEST_USER_ID`     | Current user ID (for permission handling)             |
-| `TEST_VERBOSE`     | Show output for passing tests (`true` or `false`)     |
-| `TEST_VARIANT`     | The variant being tested (`default`, `builder`, etc.) |
+| Variable           | Description                                            |
+|--------------------|--------------------------------------------------------|
+| `TEST_IMAGE`       | The container image being tested                       |
+| `TEST_IMAGES`      | Associative array with all `group/variant` image URLs  |
+| `TEST_IMAGES_PATH` | Path to file containing serialized `TEST_IMAGES` array |
+| `TEST_ENGINE`      | Container engine to use (`podman` or `docker`)         |
+| `TEST_USER_ID`     | Current user ID (for permission handling)              |
+| `TEST_VERBOSE`     | Show output for passing tests (`true` or `false`)      |
+| `TEST_GROUP`       | The image group being tested (`nginx`, `python`, etc.) |
+| `TEST_VARIANT`     | The variant being tested (`default`, `builder`, etc.)  |
 
 ## Variant-Aware Testing
 
@@ -75,9 +76,9 @@ a special "group" test mode for tests that need to work across multiple variants
 cross-variant-compatibility-test:
   variants: [group]
   command: |
-    # Access specific group/variant combinations
-    builder_image=${TEST_IMAGES[nginx/builder]:?}
-    default_image=${TEST_IMAGES[nginx/default]:?}
+    # Access specific group/variant combinations using TEST_GROUP
+    builder_image=${TEST_IMAGES[${TEST_GROUP}/builder]:?}
+    default_image=${TEST_IMAGES[${TEST_GROUP}/default]:?}
 
     echo "Builder variant: ${builder_image}"
     echo "Default variant: ${default_image}"
@@ -107,6 +108,28 @@ source "${TEST_IMAGES_PATH:?}"
 
 **Note:** Inline test commands in YAML files automatically have access to TEST_IMAGES and do not
 need this sourcing pattern.
+
+## Using TEST_GROUP for Dynamic References
+
+The `TEST_GROUP` variable contains the current image group name (e.g., `nginx`, `python`,
+`aspnet-runtime-8-0`). Use it with `TEST_IMAGES` to dynamically reference the current image's
+variants without hardcoding the group name:
+
+```yaml
+multi-stage-build:
+  variants: [builder]
+  command: |
+    # Build in builder variant, run in default variant
+    "${TEST_ENGINE}" build -t localhost/myapp -f - . <<EOF
+    FROM ${TEST_IMAGES[${TEST_GROUP}/builder]:?}
+    # ... build steps ...
+
+    FROM ${TEST_IMAGES[${TEST_GROUP}/default]:?}
+    COPY --from=0 /app /app
+    EOF
+
+    "${TEST_ENGINE}" run --rm localhost/myapp /app/myapp
+```
 
 ## Test Helper Functions
 
