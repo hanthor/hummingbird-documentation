@@ -2,10 +2,11 @@
 title: Retrying Konflux Checks
 description: >-
   Automatically retrigger failed Konflux CI checks on merge requests using the retrigger script.
-weight: 10
+weight: 20  # Keep pages sorted alphabetically by title; use increments of 10
 ---
 
-When Konflux CI checks fail on merge requests, you can automatically retrigger them using the provided retrigger script.
+When Konflux CI checks fail on merge requests, you can automatically retrigger them using the
+provided retrigger script.
 
 ## Prerequisites
 
@@ -28,7 +29,7 @@ make retrigger-failed-checks ARGS="--dry-run https://gitlab.com/redhat/hummingbi
 The retrigger script will:
 
 1. Extract failed pipeline runs from the commit statuses on the merge request
-2. Generate `/retest {pipeline-name}` commands for each failed run
+2. Generate `/retest pipeline-name` commands for each failed run
 3. Post the retest commands as merge request comments (unless `--dry-run`)
 4. Wait for the pipeline runs to start (unless `--dry-run`)
 
@@ -36,8 +37,8 @@ The retrigger script will:
 
 You can also manually retrigger specific checks using slash commands in merge request comments:
 
-```
-/retest {gitlab-ci--default--main-on-pull-request}
+```text
+/retest gitlab-ci--default--main-on-pull-request
 ```
 
 To retrigger a specific pipeline run as listed in [.tekton/images-on-pull-request.yaml](.tekton/images-on-pull-request.yaml).

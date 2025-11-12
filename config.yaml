@@ -25,6 +25,7 @@ module:
     - path: gitlab.com/redhat/hummingbird/containers
       mounts:
         - {source: 'documentation', target: content/docs/background/containers, includeFiles: "*.md"}
+        - {source: 'CONTRIBUTING.md', target: content/docs/contributing/quickstart.md}
 
 # Image processing configuration.
 imaging:
@@ -66,15 +67,15 @@ params:
     - title: Using a container image
       url: /docs/using/
       url_text: Start here if you want to use a Project Hummingbird container image
-      icon: fas fa-microchip
+      icon: fas fa-cube
     - title: Contributing to a container image
       url: /docs/contributing/
       url_text: Start here if you want to contribute to a Project Hummingbird container image
-      icon: fas fa-flask
+      icon: fas fa-code
     - title: Operate Hummingbird infrastructure
       url: /docs/operating/
       url_text: Start here if you want to operate Project Hummingbird infrastructure
-      icon: fab fa-gitlab
+      icon: fas fa-server
 
   links:
     left:
