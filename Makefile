@@ -27,7 +27,7 @@ container:
 
 .PHONY: check-host check
 check-host:
-	markdownlint *.md
+	markdownlint $$(git ls-files '*.md')
 check:
 	$(PODMAN_RUN) $(PODMAN_IMAGE) make check-host
 
