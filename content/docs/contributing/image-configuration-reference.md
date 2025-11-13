@@ -124,10 +124,11 @@ rpm_packages:
 - **Type**: Array of strings (repository filenames)
 - **Default**: None
 - **Description**: Additional yum repository files from `yum-repos/` to include in the RPM lockfile
-  generation. These repos are added to the standard Fedora and Hummingbird repos. Specify only the
-  filename, not the full path.
+  generation. These repos are added to the variant-specific repos (see [Global Variables Reference
+  - default_variant_repos][default-variant-repos]). Specify only the filename, not the full path.
 - **Example**: `[konflux-ci-rpm-lockfile-prototype-main-fedora-rawhide.repo]`
-- **Usage**: Only needed for packages not available in standard Fedora or Hummingbird repos
+- **Usage**: Only needed for packages not available in standard Fedora repos or variant-specific
+  repos
 
 ## Hermetic Builds
 
@@ -136,8 +137,8 @@ For hermetic builds (enabled by default), all packages from:
 - `rpm_packages.build-deps` - included in lockfiles and Containerfiles (builder layer only)
 - `rpm_packages.all` - included in lockfiles and Containerfiles (final image)
 - `rpm_packages.<variant>` - included in lockfiles and Containerfiles for matching variants
-- `default_rpm_packages.builder` (from `images/variables.yml`) - automatically added for builder
-  variants
+- `default_rpm_packages.builder` - automatically added for builder variants (see [Global Variables
+  Reference - default_rpm_packages][default-rpm-packages])
 
 are added to `rpms.lock.yaml` and prefetched using cachi2 for offline builds.
 
@@ -281,5 +282,10 @@ This ensures tags always match the actual package versions built into the image.
 
 ## Next Steps
 
-- [Adding Images](adding-images.md) - Step-by-step guide for adding new images
-- [Image Pipeline](../background/image-pipeline.md) - How the complete pipeline works
+- [Adding Images][adding-images] - Step-by-step guide for adding new images
+- [Image Pipeline][image-pipeline] - How the complete pipeline works
+
+[default-variant-repos]: ../background/global-variables-reference.md#default_variant_repos
+[default-rpm-packages]: ../background/global-variables-reference.md#default_rpm_packages
+[adding-images]: adding-images.md
+[image-pipeline]: ../background/image-pipeline.md

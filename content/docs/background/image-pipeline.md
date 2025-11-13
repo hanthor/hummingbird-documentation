@@ -33,7 +33,8 @@ Templates use reusable macros from `macros/*.yml.j2`:
 - `cleanup_newroot()` - Cleans up files
 - `final_stage()` - Creates scratch-based final image
 
-Shared configuration is defined in `images/variables.yml`.
+Shared configuration is defined in `images/variables.yml`. See [Global Variables
+Reference][global-vars] for details.
 
 ## Stage 2: Generation
 
@@ -55,8 +56,8 @@ This combines:
 
 - Reusable macros from `macros/`
 - Service-specific templates from `images/*/Containerfile.j2`
-- Configuration from `properties.yml`
-- Variables from `images/variables.yml`
+- Configuration from `properties.yml` (see [Image Configuration Reference][image-config])
+- Variables from `images/variables.yml` (see [Global Variables Reference][global-vars])
 
 Output: `images/<image-name>/<variant>/Containerfile`
 
@@ -309,8 +310,13 @@ job.
 
 ## Next Steps
 
-- [Development Workflow](../contributing/development-workflow.md) - Practical guide for contributing
-- [Adding Images](../contributing/adding-images.md) - Step-by-step guide for adding new images
-- [Testing Guide](../contributing/testing-images.md) - How to run and write tests locally
-- [Image Configuration Reference](../contributing/image-configuration-reference.md) - Complete
-  `properties.yml` reference
+- [Development Workflow][dev-workflow] - Practical guide for contributing
+- [Adding Images][adding-images] - Step-by-step guide for adding new images
+- [Testing Guide][testing] - How to run and write tests locally
+- [Image Configuration Reference][image-config] - Complete `properties.yml` reference
+
+[global-vars]: global-variables-reference.md
+[image-config]: ../contributing/image-configuration-reference.md
+[dev-workflow]: ../contributing/development-workflow.md
+[adding-images]: ../contributing/adding-images.md
+[testing]: ../contributing/testing-images.md
