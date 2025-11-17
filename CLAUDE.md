@@ -24,6 +24,40 @@ Always use file-based links in Markdown that Hugo will rewrite:
 based on the site configuration. Using file-based links ensures consistency and
 makes it clear which file is being referenced.
 
+### Cross-Section and Cross-Repository Links
+
+For links to pages in different repositories, use full URLs with `/l/` aliases:
+
+#### ✅ Good: Full URLs with /l/ aliases
+
+```markdown
+[Image Pipeline](https://hummingbird-project.io/l/image-pipeline)
+[Global Variables Reference](https://hummingbird-project.io/l/global-variables-reference)
+[Retrying Konflux Checks](https://hummingbird-project.io/l/retrying-konflux-checks)
+```
+
+#### ❌ Bad: Relative paths across sections
+
+```markdown
+[Image Pipeline](../background/image-pipeline.md)
+[Global Variables Reference](../../background/containers/global-variables-reference.md)
+```
+
+**Why**: Full URLs with `/l/` aliases work in both standalone contexts (GitHub, text editors) and
+Hugo rendering. Hugo's link render hook automatically converts these to relative links in the
+rendered site, providing the best of both worlds.
+
+**When to use each link type:**
+
+- **Same directory**: Use relative `.md` links (e.g., `testing-images.md`)
+- **Cross-section in documentation repo**: Use relative `.md` links (e.g.,
+`testing-images.md`)
+- **Cross-section in other repos**: Use full URLs with `/l/` aliases
+  (e.g., `https://hummingbird-project.io/l/testing-images`)
+- **Cross-repo**: Use full URLs with `/l/` aliases
+  (e.g., `https://hummingbird-project.io/l/testing-images`)
+- **External sites**: Use full URLs as-is
+
 ### Reference Style Links
 
 Always use reference style links for better readability and maintainability:
@@ -36,9 +70,9 @@ and [Global Variables Reference][global-vars] for project-wide configuration.
 
 For more details, see [default_variant_repos documentation][default-variant-repos].
 
-[image-config]: ../contributing/image-configuration-reference.md
-[global-vars]: ../background/global-variables-reference.md
-[default-variant-repos]: ../background/global-variables-reference.md#default_variant_repos
+[image-config]: image-configuration-reference.md
+[global-vars]: https://hummingbird-project.io/l/global-variables-reference
+[default-variant-repos]: https://hummingbird-project.io/l/global-variables-reference#default_variant_repos
 ```
 
 ### ❌ Bad: Inline links
@@ -96,6 +130,31 @@ aliases: [/l/test]                   # Too generic
 **Why**: Flat aliases are simpler to manage and less likely to conflict. The
 `/l/` prefix clearly indicates these are stable links meant for external
 references.
+
+### Using Stable Aliases in Links
+
+Once a page has an alias, reference it using the full URL:
+
+```markdown
+See the [Testing Guide](https://hummingbird-project.io/l/testing-images) for details.
+```
+
+**Benefits:**
+
+- Works in GitHub/GitLab file viewers
+- Works in text editors and IDEs
+- Works when files are copied or moved
+- Hugo automatically converts to relative links in rendered site
+- No broken links when documentation is reorganized
+
+**When to add aliases:**
+
+Add `/l/` aliases to pages that:
+
+- Are referenced from other repositories (e.g., containers repo → docs repo)
+- Are linked to from CI scripts or infrastructure
+- Are shared in merge request comments or external documentation
+- Are referenced across documentation sections in other repositories
 
 ### Cross-References and Next Steps
 

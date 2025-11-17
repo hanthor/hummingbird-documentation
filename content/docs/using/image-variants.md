@@ -3,6 +3,7 @@ title: Understanding Image Variants
 description: >-
   Learn about different image variants, tagging strategies, and multi-stage build patterns.
 weight: 20
+aliases: [/l/image-variants]
 ---
 
 Hummingbird provides different variants and base images to support various use cases while
