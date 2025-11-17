@@ -24,6 +24,42 @@ Always use file-based links in Markdown that Hugo will rewrite:
 based on the site configuration. Using file-based links ensures consistency and
 makes it clear which file is being referenced.
 
+### Reference Style Links
+
+Always use reference style links for better readability and maintainability:
+
+### ✅ Good: Reference style links
+
+```markdown
+See the [Image Configuration Reference][image-config] for per-image settings
+and [Global Variables Reference][global-vars] for project-wide configuration.
+
+For more details, see [default_variant_repos documentation][default-variant-repos].
+
+[image-config]: ../contributing/image-configuration-reference.md
+[global-vars]: ../background/global-variables-reference.md
+[default-variant-repos]: ../background/global-variables-reference.md#default_variant_repos
+```
+
+### ❌ Bad: Inline links
+
+```markdown
+See the [Image Configuration
+Reference](../contributing/image-configuration-reference.md) for per-image
+settings and [Global Variables
+Reference](../background/global-variables-reference.md) for project-wide
+configuration.
+```
+
+**Why**: Reference style links separate content from URLs, making the text more
+readable and easier to maintain. Link definitions at the end act as a table of
+contents for external references. This is especially important for:
+
+- Long URLs or URLs with anchors
+- Links that appear multiple times
+- "See Also" and "Next Steps" sections
+- Any page with multiple cross-references
+
 ### Stable Link Aliases
 
 For pages that need stable URLs (e.g., referenced from external repositories),
