@@ -24,6 +24,7 @@ module:
   imports:
     - path: gitlab.com/redhat/hummingbird/containers
       mounts:
+        - {source: 'README.md', target: content/docs/using/_index.md}
         - {source: 'CONTRIBUTING.md', target: content/docs/contributing/quickstart.md}
         - {source: 'documentation/contributing', target: content/docs/contributing, includeFiles: "*.md"}
         - {source: 'documentation/background', target: content/docs/background/containers, includeFiles: "*.md"}
