@@ -1,10 +1,49 @@
 {{- $link := .Destination -}}
 {{- $isRemote := strings.HasPrefix $link "http" -}}
-{{- if not $isRemote -}}
-{{- $url := urls.Parse .Destination -}}
-{{- if $url.Path -}}
-{{- $fragment := "" -}}
-{{- with $url.Fragment }}{{ $fragment = printf "#%s" . }}{{ end -}}
-{{- with .Page.GetPage $url.Path }}{{ $link = printf "%s%s" .RelPermalink $fragment }}{{ end }}{{ end -}}
+{{- $isInternalLink := false -}}
+{{- if $isRemote -}}
+  {{- /* Handle baseURL and companionHost links */ -}}
+  {{- $baseURL := site.BaseURL | strings.TrimSuffix "/" -}}
+  {{- $companionHost := site.Params.companionHost | strings.TrimSuffix "/" -}}
+  {{- if or (strings.HasPrefix $link $baseURL) (and $companionHost (strings.HasPrefix $link $companionHost)) -}}
+    {{- $isInternalLink = true -}}
+    {{- $url := urls.Parse .Destination -}}
+    {{- $fragment := "" -}}
+    {{- with $url.Fragment }}{{ $fragment = printf "#%s" . }}{{ end -}}
+    {{- /* Try /l/ alias lookup if path starts with /l/ */ -}}
+    {{- if strings.HasPrefix $url.Path "/l/" -}}
+      {{- $urlPath := strings.TrimSuffix "/" $url.Path -}}
+      {{- $foundPage := false -}}
+      {{- range $page := site.Pages -}}
+        {{- if not $foundPage -}}
+          {{- range $page.Params.aliases -}}
+            {{- if or (eq . $urlPath) (eq . $url.Path) -}}
+              {{- $link = printf "%s%s" $page.RelPermalink $fragment -}}
+              {{- $foundPage = true -}}
+            {{- end -}}
+          {{- end -}}
+        {{- end -}}
+      {{- end -}}
+    {{- else -}}
+      {{- /* Try direct path lookup */ -}}
+      {{- with .Page.GetPage $url.Path -}}
+        {{- $link = printf "%s%s" .RelPermalink $fragment -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- else -}}
+  {{- $url := urls.Parse .Destination -}}
+  {{- if $url.Path -}}
+    {{- $fragment := "" -}}
+    {{- with $url.Fragment }}{{ $fragment = printf "#%s" . }}{{ end -}}
+    {{- with .Page.GetPage $url.Path }}{{ $link = printf "%s%s" .RelPermalink $fragment }}{{ end -}}
+  {{- end -}}
 {{- end -}}
-{{- print "" -}}<a href="{{ $link | safeURL }}"{{ with .Title}} title="{{ . }}"{{ end }}{{ if $isRemote }} target="_blank"{{ end }}>{{ .Text | safeHTML }}</a>{{- print "" -}}
+{{- print "" -}}
+<a href="{{ $link | safeURL }}"
+   {{- with .Title }} title="{{ . }}"{{ end }}
+   {{- if and $isRemote (not $isInternalLink) }} target="_blank"{{ end -}}
+>
+  {{- .Text | safeHTML -}}
+</a>
+{{- print "" -}}
