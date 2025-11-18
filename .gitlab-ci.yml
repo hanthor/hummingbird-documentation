@@ -144,7 +144,7 @@ stop-mr:
 
 trigger_internal_documentation:
   stage: deploy
-  needs: [deploy_hugo_tag]
+  needs: [{job: deploy_hugo_tag, optional: true}]
   variables:
     PARENT_PROJECT_PATH: $CI_PROJECT_PATH
   trigger:

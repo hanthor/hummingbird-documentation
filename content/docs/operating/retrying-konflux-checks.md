@@ -3,6 +3,7 @@ title: Retrying Konflux Checks
 description: >-
   Automatically retrigger failed Konflux CI checks on merge requests using the retrigger script.
 weight: 20  # Keep pages sorted alphabetically by title; use increments of 10
+aliases: [/l/retrying-konflux-checks]
 ---
 
 When Konflux CI checks fail on merge requests, you can automatically retrigger them using the

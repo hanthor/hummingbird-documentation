@@ -1,0 +1,7 @@
+{{-
+  print $.Page.File.Dir ( .Get 0 )
+  | os.ReadFile
+  | replaceRE "^---[\\s\\S]+?---" ""
+  | replaceRE "^#\\s+.*" ""
+  | safeHTML
+-}}
