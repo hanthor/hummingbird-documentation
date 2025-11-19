@@ -13,6 +13,15 @@ ifdef CONTAINERS_REPO_PATH
 	endif
 endif
 
+ifdef RPMS_REPO_PATH
+	ifdef RUNNING_IN_CONTAINER
+		HUGO_MODULE_REPLACEMENTS += gitlab.com/redhat/hummingbird/rpms->/rpms
+	else
+		PODMAN_ADDITIONAL_ARGS += -v $(RPMS_REPO_PATH):/rpms:z -e RPMS_REPO_PATH=$(RPMS_REPO_PATH)
+		HUGO_MODULE_REPLACEMENTS += gitlab.com/redhat/hummingbird/rpms->$(basename $(RPMS_REPO_PATH))
+	endif
+endif
+
 ifneq ($(HUGO_MODULE_REPLACEMENTS),)
 	export HUGO_MODULE_REPLACEMENTS := $(subst $(space),$(comma),$(HUGO_MODULE_REPLACEMENTS))
 endif

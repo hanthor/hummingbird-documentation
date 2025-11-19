@@ -21,7 +21,7 @@ sites:
 
 ## Documentation Repositories
 
-Documentation content comes from three repositories:
+Documentation content comes from four repositories:
 
 1. **[Containers repository][containers-repo]** -
    Documentation focused on container images:
@@ -30,22 +30,26 @@ Documentation content comes from three repositories:
    - `documentation/ci-scripts/` - CI script documentation
    - `CONTRIBUTING.md` - Quickstart guide (mounted as quickstart.md)
 
-2. **[Public documentation repository][docs-repo]** -
+2. **[RPMs repository][rpms-repo]** -
+   Documentation focused on RPM packages:
+   - `CONTRIBUTING.md` - Contributing guide for RPM packages
+
+3. **[Public documentation repository][docs-repo]** -
    Infrastructure and user guides:
    - `content/docs/using/` - End-user guides for using container images
    - `content/docs/operating/` - Infrastructure operation guides (Konflux, GitLab, etc.)
    - `content/docs/background/` - General architecture and concepts
 
-3. **[Internal documentation repository][internal-docs-repo]** -
+4. **[Internal documentation repository][internal-docs-repo]** -
    Internal-only confidential content
 
 ### How They Work Together
 
 The repositories are layered using Hugo Modules:
 
-1. **Public documentation** imports specific directories from the containers repository
+1. **Public documentation** imports specific directories from the containers and rpms repositories
 2. **Internal documentation** imports the public documentation (which transitively includes
-   the containers documentation)
+   the containers and rpms documentation)
 
 **Hugo Module Mounts:**
 
@@ -59,6 +63,10 @@ module:
         - {source: 'documentation/contributing', target: content/docs/contributing}
         - {source: 'documentation/background', target: content/docs/background/containers}
         - {source: 'documentation/ci-scripts', target: content/docs/background/containers/ci-scripts}
+    - path: gitlab.com/redhat/hummingbird/rpms
+      mounts:
+        - {source: 'CONTRIBUTING.md', target: content/snippets/rpms-contributing.md}
+        - {source: 'CONTRIBUTING.md', target: content/docs/background/rpms/contributing.md}
 ```
 
 This creates a unified documentation site from multiple repositories without duplication.
@@ -94,12 +102,14 @@ cd ~/git/hummingbird
 
 # Clone all repositories
 git clone https://gitlab.com/redhat/hummingbird/containers
+git clone https://gitlab.com/redhat/hummingbird/rpms
 git clone https://gitlab.com/redhat/hummingbird/documentation
 git clone https://gitlab.com/redhat/hummingbird/internal-documentation
 
 # Set up environment variables
 cat > .envrc << 'EOF'
 export CONTAINERS_REPO_PATH=$(pwd)/containers
+export RPMS_REPO_PATH=$(pwd)/rpms
 export DOCUMENTATION_REPO_PATH=$(pwd)/documentation
 EOF
 direnv allow
@@ -238,6 +248,7 @@ The internal documentation adds:
 When adding new documentation, place it in the most appropriate section.
 
 [containers-repo]: https://gitlab.com/redhat/hummingbird/containers
+[rpms-repo]: https://gitlab.com/redhat/hummingbird/rpms
 [docs-repo]: https://gitlab.com/redhat/hummingbird/documentation
 [internal-docs-repo]: https://gitlab.com/redhat/hummingbird/internal-documentation
 [direnv]: https://direnv.net/
