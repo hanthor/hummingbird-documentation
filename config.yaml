@@ -29,6 +29,10 @@ module:
         - {source: 'documentation/contributing', target: content/docs/contributing, includeFiles: "*.md"}
         - {source: 'documentation/background', target: content/docs/background/containers, includeFiles: "*.md"}
         - {source: 'documentation/ci-scripts', target: content/docs/background/containers/ci-scripts, includeFiles: "*.md"}
+    - path: gitlab.com/redhat/hummingbird/rpms
+      mounts:
+        - {source: 'CONTRIBUTING.md', target: content/snippets/rpms-contributing.md}
+        - {source: 'CONTRIBUTING.md', target: content/docs/background/rpms/_index.md}
 
 # Image processing configuration.
 imaging:
@@ -75,6 +79,10 @@ params:
       url: /docs/contributing/
       url_text: Start here if you want to contribute to a Project Hummingbird container image
       icon: fas fa-code
+    - title: Contributing a rpm
+      url: /docs/background/rpms/
+      url_text: Start here if you want to contribute a Project Hummingbird RPM package
+      icon: fas fa-box
     - title: Operate Hummingbird infrastructure
       url: /docs/operating/
       url_text: Start here if you want to operate Project Hummingbird infrastructure
