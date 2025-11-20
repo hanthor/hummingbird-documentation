@@ -28,7 +28,8 @@ Documentation content comes from four repositories:
    - `documentation/contributing/` - How to add and modify container images
    - `documentation/background/` - Container image architecture and reference docs
    - `documentation/ci-scripts/` - CI script documentation
-   - `CONTRIBUTING.md` - Quickstart guide (mounted as quickstart.md)
+   - `README.md` - User guide
+   - `CONTRIBUTING.md` - Quickstart guide
 
 2. **[RPMs repository][rpms-repo]** -
    Documentation focused on RPM packages:
@@ -59,15 +60,17 @@ module:
   imports:
     - path: gitlab.com/redhat/hummingbird/containers
       mounts:
-        - {source: 'CONTRIBUTING.md', target: content/docs/contributing/quickstart.md}
-        - {source: 'documentation/contributing', target: content/docs/contributing}
-        - {source: 'documentation/background', target: content/docs/background/containers}
-        - {source: 'documentation/ci-scripts', target: content/docs/background/containers/ci-scripts}
+        - {source: 'README.md', target: content/snippets/readme.md}
+        - {source: 'CONTRIBUTING.md', target: content/snippets/contributing.md}
+        - {source: 'documentation/contributing', target: content/docs/contributing, includeFiles: "*.md"}
+        - {source: 'documentation/background', target: content/docs/background/containers, includeFiles: "*.md"}
+        - {source: 'documentation/ci-scripts', target: content/docs/background/containers/ci-scripts, includeFiles: "*.md"}
     - path: gitlab.com/redhat/hummingbird/rpms
       mounts:
         - {source: 'CONTRIBUTING.md', target: content/snippets/rpms-contributing.md}
-        - {source: 'CONTRIBUTING.md', target: content/docs/background/rpms/contributing.md}
 ```
+
+For README.md and CONTRIBUTING.md, front matter is provided via wrapper files.
 
 This creates a unified documentation site from multiple repositories without duplication.
 
