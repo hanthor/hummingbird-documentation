@@ -33,6 +33,7 @@ module:
     - path: gitlab.com/redhat/hummingbird/rpms
       mounts:
         - {source: 'CONTRIBUTING.md', target: content/snippets/rpms-contributing.md}
+        - {source: 'documentation/operating', target: content/docs/operating, includeFiles: "*.md"}
     - path: gitlab.com/redhat/hummingbird/tools
       mounts:
         - {source: 'documentation', target: content/docs/background/tools, includeFiles: "*.md"}
