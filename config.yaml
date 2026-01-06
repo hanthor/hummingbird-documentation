@@ -101,15 +101,6 @@ params:
         - name: Code repositories
           url: https://gitlab.com/redhat/hummingbird
           desc: gitlab.com
-        - name: Issue tracker
-          url: https://issues.redhat.com/projects/HUM/summary
-          desc: issues.redhat.com
-    right:
-      title: Contact
-      links:
-        - name: Report an issue
-          url: https://issues.redhat.com/projects/HUM/summary
-          icon: fa-solid fa-book
 
 menu:
   main:
