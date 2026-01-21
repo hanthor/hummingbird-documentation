@@ -12,3 +12,23 @@
 .lead .td-search__input:not(:focus) {
   background: white;
 }
+
+/* Adjust search icon position - closer to left edge */
+.lead .td-search__icon {
+  left: 0.4em;
+}
+
+/* Hero banner backdrop filter - darken for better text contrast */
+.td-overlay--dark::after {
+  backdrop-filter: brightness(0.92);
+}
+
+/* Hero banner text weight and shadow */
+#td-cover-block-1 h1 {
+  font-weight: 700;
+  text-shadow: 0 0 20px rgba(0, 0, 0, 0.6);
+}
+#td-cover-block-1 h2 {
+  font-weight: 600;
+  text-shadow: 0 0 16px rgba(0, 0, 0, 0.6);
+}
