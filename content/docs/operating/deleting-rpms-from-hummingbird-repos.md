@@ -27,10 +27,16 @@ vault kv get -mount=apps -field cli.toml hummingbird/PULP_PUBLIC_RHEL_PRIMITIVES
   * You need to execute this command once for each architecture.
 
 ```bash
-pulp --domain public-hummingbird rpm repository content list --repository aarch64 --limit  1000 | jq -r '.. | objects | select(.name=="systemd-stub" and has("pulp_href")) | .pulp_href'
+pulp --domain public-hummingbird rpm content -t package list --name systemd-stub | jq -r '.[] | "\(.pulp_href)"'
 ```
 
-Example output:
+or for prettier content,
+
+```bash
+pulp --domain public-hummingbird rpm content -t package list --name systemd-stub | jq -r '.[] | "\(.name) \(.version)-\(.release)  \(.arch)  \(.pulp_created)  \(.pulp_href)"'
+```
+
+Example output from basic command:
 
 ```text
 /api/pulp/public-hummingbird/api/v3/content/rpm/packages/019b0e50-b89e-749b-a82b-405e00cdd1ed/
@@ -46,6 +52,7 @@ pulp --domain public-hummingbird rpm repository content remove --repository aarc
 
 * Repeat for `x64_64` and `source` repositories
 * Verify deletion by navigating to <https://console.redhat.com/api/pulp-content/public-hummingbird/>
+* Deletion is a serial operation that can be impacted by other automated jobs updating the repositories.
 
 ## Related Operations
 
