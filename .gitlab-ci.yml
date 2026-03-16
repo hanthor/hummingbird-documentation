@@ -76,6 +76,7 @@ deploy_hugo_tag:
     - !reference [.rules, web]
 
 build:
+  tags: [big-runner]
   script:
     - |
       make setup-host
