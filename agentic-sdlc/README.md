@@ -2,13 +2,13 @@
 
 Project Hummingbird's core mission is velocity: shipping RPM updates, CVE fixes, and new
 container images as fast as possible. Managing 400+ packages and 1,750+ image builds with a
-24-hour security SLA makes automation not a nice-to-have, but the only viable path.
+24-hour security SLO makes automation not a nice-to-have, but the only viable path.
 
 Hummingbird is Red Hat's reference implementation for responsible agentic AI in software
 engineering — not a pilot program, but a production system built incrementally and grounded
 in engineering discipline.
 
-## The Vision: A Lights-Out Factory
+## The vision: Agentic Software Delivery Lifecycle
 
 The target state is a factory that runs without human intervention from the moment a request
 arrives to the moment a merge request is ready for review.
@@ -26,9 +26,10 @@ the configuration, code, or package definitions, running validation, and opening
 request with a complete description of what was done and why. This is the work that normally
 sits in an engineering backlog.
 
-The merge request is then reviewed by automated agents and a human engineer who makes the
-final call. No agent-produced code is merged without human review — the human is not
-eliminated, but elevated to the role where judgment actually matters.
+The merge request is then reviewed by automated checks, including the production
+[code review agent][code-review-workflow], and a human engineer who makes the final call. No
+agent-produced code is merged without human review — the human is not eliminated, but elevated
+to the role where judgment actually matters.
 
 What changes is everything that came before: intake, analysis, scoping, implementation. Work
 that previously moved through queues over days now flows through agents in minutes.
@@ -62,9 +63,11 @@ eliminate the category of "work sitting in a queue waiting for a human to look a
 
 ## Responsible AI
 
-Agent-produced code and decisions require a human in the loop. This is not a temporary
-constraint — it is a design principle. The feedback between human judgment and agent behavior
-is what keeps the system trustworthy over time.
+Agent-produced code and decisions require human approval before merge. This is not a temporary
+constraint — it is a design principle. Humans may stay in the loop to steer or babysit
+complex work when that helps, but the standing requirement is approval—not constant
+supervision of every agent run. The feedback between human judgment and agent behavior is what
+keeps the system trustworthy over time.
 
 This has a specific architectural implication: agents must learn from feedback. When a reviewer
 comments on an agent-produced merge request, the agent incorporates that feedback and updates
@@ -83,6 +86,9 @@ months — at a velocity that would be impossible to sustain manually.
 
 ### Failure Analysis Agent
 
+Workflow definition and prompts live in the [`hummingbird-agent`][hummingbird-agent-tree]
+repository ([`analyze-failures.md`][failure-analysis-workflow]).
+
 When a merge request pipeline fails, this agent automatically investigates and posts its
 findings directly on the merge request. It pulls data from multiple sources — GitLab CI job
 logs, Konflux build and test pipeline runs, Testing Farm test results — and correlates them
@@ -96,6 +102,9 @@ manually piece together a root cause now happens automatically, before the autho
 their coffee.
 
 ### Code Review Agent
+
+Workflow definition and prompts live in the [`hummingbird-agent`][hummingbird-agent-tree]
+repository ([`code-review.md`][code-review-workflow]).
 
 When a merge request is opened, this agent performs a technical code review with the
 priorities of a senior engineer: security first, then correctness, then performance, then
@@ -149,8 +158,23 @@ conventions, agent context, and customer-facing documentation share a single rep
 knowledge is preserved across engineers, tech writers, and agents alike — no silos, no
 synchronization overhead, no context lost between roles.
 
+### Long-form documentation agent
+
+We'll incorporate the long form documentation part of the software delivery.
+Skills contributed by the documentation team will be present in an agent to do basic updates
+and creation of long form Red Hat documentation about Hummingbird.
+
+### User design agent
+
+We'll incorporate the user design part of software delivery. This agents skills
+contributed by the UX team will contain basic patterns and practices for reviewing and creating
+UX related changes.
+
 [containers-repo]: https://gitlab.com/redhat/hummingbird/containers
 [rpms-repo]: https://gitlab.com/redhat/hummingbird/rpms
 [hummingbird-agent-docs]: https://gitlab.com/redhat/hummingbird/tools/-/blob/main/documentation/hummingbird-agent.md
+[hummingbird-agent-tree]: https://gitlab.com/redhat/hummingbird/tools/-/tree/main/hummingbird-agent
+[failure-analysis-workflow]: https://gitlab.com/redhat/hummingbird/tools/-/blob/main/hummingbird-agent/workflows/analyze-failures.md
+[code-review-workflow]: https://gitlab.com/redhat/hummingbird/tools/-/blob/main/hummingbird-agent/workflows/code-review.md
 [vrothberg-article-linkedin]: https://www.linkedin.com/pulse/from-pair-programmer-autonomous-agent-how-actually-adopt-rothberg-qdyqe/
 [bornet-book]: https://www.pascalbornet.com/book
