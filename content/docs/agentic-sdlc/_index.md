@@ -16,63 +16,46 @@ in engineering discipline.
 
 ## The vision: Agentic Software Development Lifecycle
 
-The target state is a delivery pipeline driven by agents at every stage — with humans engaged
-where their judgment is needed, not where their time is simply being consumed by routine work.
+The target state is a development pipeline driven by agents at every stage — with humans
+engaged where their judgment is needed, not where their time is consumed by routine work. The
+goal is to automate as much as possible, reducing the time humans spend on work that does not
+require their judgment.
 
-A customer — a product team, a business unit, an external user — submits a request: a new
-container image, a new RPM, a change to an existing component. Agents take it from there:
+Every change flows through the same lifecycle:
 
-**Analysis.** A **product management agent** refines the raw request into a well-scoped,
-actionable specification — resolving ambiguities, mapping the request to existing components
-and conventions, and producing a clear definition of what needs to be built. This is the work
-that normally sits in a product manager's queue: assessing feasibility, evaluating software
-licenses, setting priorities, and determining whether and how a request fits the product.
-Some of these decisions carry enough complexity or risk that human review is warranted before
-implementation begins — the agent surfaces the relevant context and flags those cases rather
-than proceeding blindly.
+**1. Request.** A customer, product team, or automated trigger submits a change: a new
+container image, an RPM update, a feature request, a bug fix.
 
-**Implementation.** An engineering agent takes that specification and implements it: writing
-the configuration, code, or package definitions, running validation, and opening a merge
-request with a complete description of what was done and why. This is the work that normally
-sits in an engineering backlog.
+**2. Analysis.** A **product management agent** assesses the request — evaluating feasibility,
+software licenses, priority, and fit against existing components and conventions. For
+straightforward requests it proceeds automatically; for complex or ambiguous ones it surfaces
+the relevant context and flags the case for human input before continuing. This is the work
+that normally sits in a product manager's queue.
 
-The merge request is then reviewed by automated checks, including the production
-[code review agent][code-review-workflow], and a human engineer who makes the final call. No
-agent-produced code is merged without human review — the human is not eliminated, but elevated
-to the role where judgment actually matters.
+**3. Implementation.** The request splits based on its nature:
 
-The goal is not to remove humans from the process — it is to remove the parts of the process
-that do not need them. Intake, triage, analysis, scoping, implementation: work that previously
-moved through queues over days now flows through agents in minutes, with humans engaged at the
-points where their input genuinely changes the outcome.
+- *Deterministic changes* — dependency updates, lockfile syncs, rebuilds triggered by upstream
+  changes — are implemented by rule-based automation and **merged automatically** once CI
+  passes. No ticket, no approval, no delay.
+- *Everything else* is handled by an **engineering agent**: a developer co-programming with an
+  agent, or an agent working autonomously to write the code or configuration, run validation,
+  and open a merge request. Agentic AI is the default answer for everything that has
+  historically required a human to pick it up, think through it, and act on it. This extends
+  beyond code: a **tech writer agent** drafts or updates the documentation that accompanies a
+  change, and a **testing agent** generates or extends tests to cover it.
 
-## The Strategy
+**4. Review.** Automated agents check for policy compliance and code quality, including the
+production [code review agent][code-review-workflow]. The same agent capabilities that
+contribute during implementation also apply here: a **tech writer agent** reviews documentation
+changes for clarity and correctness, and a **testing agent** reviews test coverage and flags
+gaps. A human engineer makes the final call on all of it. No agent-produced work is merged
+without human approval — the human is not eliminated, but elevated to the role where judgment
+actually matters.
 
-Not all work is the same. The strategy distinguishes between two categories:
+**5. Merge.** The change ships.
 
-**Rule-based automation** handles changes that are deterministic and well-understood: updating
-an RPM to a new upstream version, syncing a package lockfile, rebuilding an image after a
-dependency change. These changes follow documented rules and carry no ambiguity. With proper
-CI/CD pipelines and testing in place, they can be — and should be — **merged automatically
-without human review**. No ticket, no approval, no delay.
-
-**Agentic AI is the default answer for everything that has historically required a human.**
-If a task previously needed someone to pick it up, think through it, and act on it, that is
-exactly where agents belong:
-
-- A developer co-programming with an agent to implement a feature or work through a complex
-  change — the agent as a capable collaborator, not just an autocomplete tool.
-- Agents running autonomously to review merge requests, catch issues, and propose concrete
-  fixes — reducing review burden without removing human judgment from the final call.
-- Agents debugging CI failures, analyzing root causes, and surfacing actionable findings
-  directly in the merge request where engineers are already working.
-- Agents implementing well-scoped tasks end-to-end — opening the merge request, responding
-  to feedback, iterating until the work is ready to ship.
-
-The dividing line is not complexity — it is determinism. If the correct output can be derived
-from rules, automate it fully. If it requires judgment, drive it agentically. The goal is to
-automate as much as possible, reducing the time humans spend on work that does not require
-their judgment.
+The goal is not to remove humans from the process — it is to remove the parts that do not
+need them.
 
 ## Responsible AI
 
@@ -90,12 +73,43 @@ improving with each iteration rather than repeating the same mistakes.
 This approach follows the frameworks established in Pascal Bornet's
 [*Agentic Artificial Intelligence*][bornet-book].
 
+## Building the Foundation
+
+Deploying production agents requires a foundation. The approach that works is not to automate
+first and document later — it is the reverse.
+
+**Phase 1 — Agent as pair programmer.** Agents assist individual developers: drafting code,
+explaining unfamiliar systems, proposing changes for review. This phase builds understanding
+of what agents need: context, conventions, constraints.
+
+**Phase 2 — Documentation as fuel.** Agent output quality is directly proportional to
+documentation quality. Every repository carries an `AGENTS.md` — a file with instructions
+targeting agents specifically, but one that mostly points to other documentation rather than
+duplicating it. That underlying documentation is written for humans and agents alike: clear,
+specific, and rich with rationale. The `AGENTS.md` is the entry point; the broader docs are
+the substance. An agent with good documentation reasons from the same foundation as the team;
+an agent without it guesses.
+
+**Phase 3 — Agents in production.** With the foundation in place, agents move into the
+critical path: first as reviewers proposing concrete changes, then as autonomous contributors
+on well-defined tasks.
+
+See [From Pair Programmer to Autonomous Agent][vrothberg-article-linkedin] by Valentin
+Rothberg for the full treatment.
+
 ## Agents in Production Today
 
-Two agents are running in production, built on the [Hummingbird Agent][hummingbird-agent-docs]
-platform. Together they have contributed to thousands of commits across the
-[`containers`][containers-repo] and [`rpms`][rpms-repo] repositories over the past eight
-months — at a velocity that would be impossible to sustain manually.
+Two agents are running in production today — worker bees keeping the engines running. Built
+on the [Hummingbird Agent][hummingbird-agent-docs] platform, they have contributed to
+thousands of commits across the [`containers`][containers-repo] and [`rpms`][rpms-repo]
+repositories over the past eight months — at a velocity that would be impossible to sustain
+manually.
+
+All agentic work on Hummingbird is tracked in the [HUM-687 epic][hum-687]. Readers will find
+additional agents in planning there, such as the **merge conflict agent** — which will
+automatically resolve conflicts that arise when rule-based automation updates `.spec` files in
+the Hummingbird RPM pipeline and runs into Hummingbird-specific patches that need to be
+carried forward.
 
 ### Failure Analysis Agent
 
@@ -128,30 +142,6 @@ explained an intentional design choice.
 
 The result is consistent, high-quality review coverage on every merge request, with human
 reviewers free to focus on the issues that genuinely need their judgment.
-
-## Building the Foundation
-
-Deploying production agents requires a foundation. The approach that works is not to automate
-first and document later — it is the reverse.
-
-**Phase 1 — Agent as pair programmer.** Agents assist individual developers: drafting code,
-explaining unfamiliar systems, proposing changes for review. This phase builds understanding
-of what agents need: context, conventions, constraints.
-
-**Phase 2 — Documentation as fuel.** Agent output quality is directly proportional to
-documentation quality. Every repository carries an `AGENTS.md` — a file with instructions
-targeting agents specifically, but one that mostly points to other documentation rather than
-duplicating it. That underlying documentation is written for humans and agents alike: clear,
-specific, and rich with rationale. The `AGENTS.md` is the entry point; the broader docs are
-the substance. An agent with good documentation reasons from the same foundation as the team;
-an agent without it guesses.
-
-**Phase 3 — Agents in production.** With the foundation in place, agents move into the
-critical path: first as reviewers proposing concrete changes, then as autonomous contributors
-on well-defined tasks.
-
-See [From Pair Programmer to Autonomous Agent][vrothberg-article-linkedin] by Valentin
-Rothberg for the full treatment.
 
 ## Documentation and Tech Writers
 
@@ -191,6 +181,7 @@ The user design part of the software development lifecycle will be driven agenti
 contributed by the UX team will be encoded in an agent covering basic patterns and practices
 for reviewing and creating UX-related changes.
 
+[hum-687]: https://redhat.atlassian.net/browse/HUM-687
 [containers-repo]: https://gitlab.com/redhat/hummingbird/containers
 [rpms-repo]: https://gitlab.com/redhat/hummingbird/rpms
 [hummingbird-agent-docs]: https://hummingbird-project.io/docs/background/tools/hummingbird-agent-design/
@@ -198,4 +189,4 @@ for reviewing and creating UX-related changes.
 [failure-analysis-workflow]: https://gitlab.com/redhat/hummingbird/tools/-/blob/main/hummingbird-agent/workflows/analyze-failures.md
 [code-review-workflow]: https://gitlab.com/redhat/hummingbird/tools/-/blob/main/hummingbird-agent/workflows/code-review.md
 [vrothberg-article-linkedin]: https://www.linkedin.com/pulse/from-pair-programmer-autonomous-agent-how-actually-adopt-rothberg-qdyqe/
-[bornet-book]: https://www.pascalbornet.com/book
+[bornet-book]: https://pascalbornet.com/#bestseller
