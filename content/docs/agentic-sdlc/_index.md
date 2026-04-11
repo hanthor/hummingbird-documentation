@@ -1,4 +1,10 @@
-# Agentic SDLC
+---
+title: Agentic SDLC
+linktitle: Agentic SDLC
+description: How Project Hummingbird uses agentic AI to drive velocity across the software development lifecycle.
+weight: 50
+aliases: [/l/agentic-sdlc]
+---
 
 Project Hummingbird's core mission is velocity: shipping RPM updates, CVE fixes, and new
 container images as fast as possible. Managing 400+ packages and 1,750+ image builds with a
@@ -8,18 +14,22 @@ Hummingbird is Red Hat's reference implementation for responsible agentic AI in 
 engineering — not a pilot program, but a production system built incrementally and grounded
 in engineering discipline.
 
-## The vision: Agentic Software Delivery Lifecycle
+## The vision: Agentic Software Development Lifecycle
 
-The target state is a factory that runs without human intervention from the moment a request
-arrives to the moment a merge request is ready for review.
+The target state is a delivery pipeline driven by agents at every stage — with humans engaged
+where their judgment is needed, not where their time is simply being consumed by routine work.
 
 A customer — a product team, a business unit, an external user — submits a request: a new
-container image, a new RPM, a change to an existing component. Two agents take it from there:
+container image, a new RPM, a change to an existing component. Agents take it from there:
 
-**Analysis.** A product management agent refines the raw request into a well-scoped,
+**Analysis.** A **product management agent** refines the raw request into a well-scoped,
 actionable specification — resolving ambiguities, mapping the request to existing components
 and conventions, and producing a clear definition of what needs to be built. This is the work
-that normally sits in a product manager's queue.
+that normally sits in a product manager's queue: assessing feasibility, evaluating software
+licenses, setting priorities, and determining whether and how a request fits the product.
+Some of these decisions carry enough complexity or risk that human review is warranted before
+implementation begins — the agent surfaces the relevant context and flags those cases rather
+than proceeding blindly.
 
 **Implementation.** An engineering agent takes that specification and implements it: writing
 the configuration, code, or package definitions, running validation, and opening a merge
@@ -31,8 +41,10 @@ The merge request is then reviewed by automated checks, including the production
 agent-produced code is merged without human review — the human is not eliminated, but elevated
 to the role where judgment actually matters.
 
-What changes is everything that came before: intake, analysis, scoping, implementation. Work
-that previously moved through queues over days now flows through agents in minutes.
+The goal is not to remove humans from the process — it is to remove the parts of the process
+that do not need them. Intake, triage, analysis, scoping, implementation: work that previously
+moved through queues over days now flows through agents in minutes, with humans engaged at the
+points where their input genuinely changes the outcome.
 
 ## The Strategy
 
@@ -59,13 +71,14 @@ exactly where agents belong:
 
 The dividing line is not complexity — it is determinism. If the correct output can be derived
 from rules, automate it fully. If it requires judgment, drive it agentically. The goal is to
-eliminate the category of "work sitting in a queue waiting for a human to look at it."
+automate as much as possible, reducing the time humans spend on work that does not require
+their judgment.
 
 ## Responsible AI
 
 Agent-produced code and decisions require human approval before merge. This is not a temporary
 constraint — it is a design principle. Humans may stay in the loop to steer or babysit
-complex work when that helps, but the standing requirement is approval—not constant
+complex work when that helps, but the standing requirement is approval — not constant
 supervision of every agent run. The feedback between human judgment and agent behavior is what
 keeps the system trustworthy over time.
 
@@ -79,14 +92,14 @@ This approach follows the frameworks established in Pascal Bornet's
 
 ## Agents in Production Today
 
-Two agents are running in production, built on the [hummingbird-agent][hummingbird-agent-docs]
+Two agents are running in production, built on the [Hummingbird Agent][hummingbird-agent-docs]
 platform. Together they have contributed to thousands of commits across the
 [`containers`][containers-repo] and [`rpms`][rpms-repo] repositories over the past eight
 months — at a velocity that would be impossible to sustain manually.
 
 ### Failure Analysis Agent
 
-Workflow definition and prompts live in the [`hummingbird-agent`][hummingbird-agent-tree]
+Workflow definition and prompts live in the [`hummingbird/tools`][hummingbird-agent-tree]
 repository ([`analyze-failures.md`][failure-analysis-workflow]).
 
 When a merge request pipeline fails, this agent automatically investigates and posts its
@@ -103,7 +116,7 @@ their coffee.
 
 ### Code Review Agent
 
-Workflow definition and prompts live in the [`hummingbird-agent`][hummingbird-agent-tree]
+Workflow definition and prompts live in the [`hummingbird/tools`][hummingbird-agent-tree]
 repository ([`code-review.md`][code-review-workflow]).
 
 When a merge request is opened, this agent performs a technical code review with the
@@ -126,10 +139,12 @@ explaining unfamiliar systems, proposing changes for review. This phase builds u
 of what agents need: context, conventions, constraints.
 
 **Phase 2 — Documentation as fuel.** Agent output quality is directly proportional to
-documentation quality. Every repository carries an `AGENTS.md` — a reference written for
-both human contributors and AI agents — with conventions and an operations index mapping
-common tasks to their documentation. An agent with good documentation reasons from the same
-foundation as the team; an agent without it guesses.
+documentation quality. Every repository carries an `AGENTS.md` — a file with instructions
+targeting agents specifically, but one that mostly points to other documentation rather than
+duplicating it. That underlying documentation is written for humans and agents alike: clear,
+specific, and rich with rationale. The `AGENTS.md` is the entry point; the broader docs are
+the substance. An agent with good documentation reasons from the same foundation as the team;
+an agent without it guesses.
 
 **Phase 3 — Agents in production.** With the foundation in place, agents move into the
 critical path: first as reviewers proposing concrete changes, then as autonomous contributors
@@ -144,35 +159,41 @@ In an agentic system, documentation is infrastructure. It is the primary interfa
 the team and its agents, and the quality of what an agent produces is bounded by the quality
 of what it can read.
 
-Tech writers are not a prerequisite for this — engineers writing clear, intentional
-documentation is sufficient to start. But their skills become more valuable in this model,
-not less: precision over generality, rationale alongside rules, explicit anti-patterns. A
-tech writer contributing to an agentic codebase is directly shaping the behavior of the
-agents that work within it.
+Critically, documentation itself should be written with agent assistance. The same agent that
+helps an engineer write and review code can help write the documentation for it — capturing
+decisions, explaining rationale, drafting contribution guides. This is not a shortcut; it is
+the same pair-programming model applied to a different kind of output. This is how Hummingbird
+bootstrapped itself as an AI-native project: agents were used from the start to draft and
+improve documentation alongside code, creating a virtuous cycle where better docs made agents
+more capable, and more capable agents helped produce better docs.
 
-In Hummingbird, agents were used to draft and improve documentation throughout the project —
-the documentation work itself as a demonstration of the model. The [`containers`][containers-repo]
-repository is also developed in active collaboration with Red Hat tech writers, whose
-customer-facing product documentation lives in the same repository as the code. When internal
-conventions, agent context, and customer-facing documentation share a single repository,
-knowledge is preserved across engineers, tech writers, and agents alike — no silos, no
-synchronization overhead, no context lost between roles.
+Tech writers are not a prerequisite for this — engineers writing clear, intentional
+documentation with agent assistance is sufficient to start. But their skills become more
+valuable in this model, not less: precision over generality, rationale alongside rules,
+explicit anti-patterns. A tech writer contributing to an agentic codebase is directly shaping
+the behavior of the agents that work within it.
+
+The [`containers`][containers-repo] repository is developed in active collaboration with Red
+Hat tech writers, whose customer-facing product documentation lives in the same repository as
+the code. When internal conventions, agent context, and customer-facing documentation share a
+single repository, knowledge is preserved across engineers, tech writers, and agents alike —
+no silos, no synchronization overhead, no context lost between roles.
 
 ### Long-form documentation agent
 
-We'll incorporate the long form documentation part of the software delivery.
-Skills contributed by the documentation team will be present in an agent to do basic updates
-and creation of long form Red Hat documentation about Hummingbird.
+The long-form documentation part of the software development lifecycle will be driven agentically.
+Skills contributed by the documentation team will be encoded in an agent to handle basic
+updates and creation of long-form Red Hat documentation about Hummingbird.
 
 ### User design agent
 
-We'll incorporate the user design part of software delivery. This agents skills
-contributed by the UX team will contain basic patterns and practices for reviewing and creating
-UX related changes.
+The user design part of the software development lifecycle will be driven agentically. Skills
+contributed by the UX team will be encoded in an agent covering basic patterns and practices
+for reviewing and creating UX-related changes.
 
 [containers-repo]: https://gitlab.com/redhat/hummingbird/containers
 [rpms-repo]: https://gitlab.com/redhat/hummingbird/rpms
-[hummingbird-agent-docs]: https://gitlab.com/redhat/hummingbird/tools/-/blob/main/documentation/hummingbird-agent.md
+[hummingbird-agent-docs]: https://hummingbird-project.io/docs/background/tools/hummingbird-agent-design/
 [hummingbird-agent-tree]: https://gitlab.com/redhat/hummingbird/tools/-/tree/main/hummingbird-agent
 [failure-analysis-workflow]: https://gitlab.com/redhat/hummingbird/tools/-/blob/main/hummingbird-agent/workflows/analyze-failures.md
 [code-review-workflow]: https://gitlab.com/redhat/hummingbird/tools/-/blob/main/hummingbird-agent/workflows/code-review.md
