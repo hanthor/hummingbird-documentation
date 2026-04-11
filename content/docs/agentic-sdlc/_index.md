@@ -8,11 +8,12 @@ aliases: [/l/agentic-sdlc]
 
 Project Hummingbird's core mission is velocity: shipping RPM updates, CVE fixes, and new
 container images as fast as possible. Managing 400+ packages and 1,750+ image builds with a
-24-hour security SLO makes automation not a nice-to-have, but the only viable path.
-
-Hummingbird is building toward becoming Red Hat's reference implementation for responsible
-agentic AI in software engineering — demonstrating through production use, not promises, that
-this kind of automation can be adopted incrementally and grounded in engineering discipline.
+24-hour security SLO makes automation not a nice-to-have, but the only viable path — and
+agentic AI is how Hummingbird is pushing that automation further than rule-based tooling alone
+can reach. Hummingbird is building toward becoming Red Hat's reference implementation for
+responsible agentic AI in software engineering: demonstrating through production use, not
+promises, that this kind of automation can be adopted incrementally and grounded in engineering
+discipline.
 
 ## The Agentic SDLC Vision
 
@@ -55,8 +56,10 @@ matters.
 
 **5. Merge.** The change ships.
 
-The goal is not to remove humans from the process — it is to remove the parts that do not
-need them.
+The goal is maximum automation, pursued pragmatically rather than dogmatically — the right
+tool for each kind of work. Where agentic AI excels is in the space just before human judgment
+is required: gathering context, surfacing options, resolving the routine, so that when a human
+does engage, the decision in front of them is sharp, informed, and fast.
 
 ## Responsible AI
 
@@ -69,10 +72,8 @@ keeps the system trustworthy over time.
 This has a specific architectural implication: agents must learn from feedback. When a reviewer
 comments on an agent-produced merge request, the agent incorporates that feedback and updates
 its work. That feedback is also preserved — stored so that future agent runs can draw on it,
-improving with each iteration rather than repeating the same mistakes.
-
-This approach follows the frameworks established in Pascal Bornet's
-[*Agentic Artificial Intelligence*][bornet-book].
+improving with each iteration rather than repeating the same mistakes — an approach grounded
+in the frameworks established in Pascal Bornet's [*Agentic Artificial Intelligence*][bornet-book].
 
 ## From Pair Programmer to Autonomous Agent
 
@@ -93,12 +94,13 @@ an agent without it guesses.
 
 **Phase 3 — Agents in production.** With the foundation in place, agents move into the
 critical path: first as reviewers proposing concrete changes, then as autonomous contributors
-on well-defined tasks.
+on well-defined tasks. The next section describes what that looks like in practice for
+Hummingbird today.
 
-A key insight here is that an agent running autonomously in production is not fundamentally
-different from a developer running an agent during pair programming. The same agent, the same
-context, the same documentation — the difference is who initiates the run and how much human
-supervision follows. If an agent consistently does good work when a developer is in the loop,
+An agent running autonomously in production is not fundamentally different from a developer
+running an agent during pair programming. The same agent, the same context, the same
+documentation — the difference is who initiates the run and how much human supervision
+follows. If an agent consistently does good work when a developer is in the loop,
 that is a strong signal the project is ready to let it operate more independently. The quality
 of pair programming performance is the leading indicator for autonomous deployment readiness.
 Trust is built incrementally, one well-handled task at a time.
@@ -108,33 +110,37 @@ Rothberg for the full treatment.
 
 ## Documentation as Infrastructure
 
-In an agentic system, documentation is infrastructure. It is the primary interface between
-the team and its agents, and the quality of what an agent produces is bounded by the quality
-of what it can read.
-
 ### Writing Documentation with Agents
 
-Documentation itself should be written with agent assistance. The same agent that helps an
-engineer write and review code can help write the documentation for it — capturing decisions,
-explaining rationale, drafting contribution guides. This is not a shortcut; it is the same
-pair-programming model applied to a different kind of output. This is how Hummingbird
-bootstrapped itself as an AI-native project: agents were used from the start to draft and
-improve documentation alongside code, creating a virtuous cycle where better docs made agents
-more capable, and more capable agents helped produce better docs.
+In an agentic system, documentation is infrastructure — the primary interface between the
+team and its agents, and the quality of what an agent produces is bounded by the quality of
+what it can read. That makes writing documentation with agent assistance not a separate task
+but a natural extension of the work: the same agent that helps an engineer write and review
+code can help write the documentation for it — capturing decisions, explaining rationale,
+drafting contribution guides. This is not a shortcut; it is the same pair-programming model
+applied to a different kind of output. This is how Hummingbird built its documentation from
+the start: engineers worked alongside agents to draft and improve it in the same way they
+wrote code — iteratively, collaboratively,
+with humans in the lead. The result is a virtuous cycle: better docs make agents more capable,
+and more capable agents help produce better docs.
 
 Tech writers are not a prerequisite — engineers writing clear, intentional documentation with
 agent assistance is sufficient to start. But their skills become more valuable in this model,
 not less: precision over generality, rationale alongside rules, explicit anti-patterns. A tech
 writer contributing to an agentic codebase is directly shaping the behavior of the agents
-that work within it. The [`containers`][containers-repo] repository is developed in active
-collaboration with Red Hat tech writers, whose customer-facing product documentation lives in
-the same repository as the code — keeping internal conventions, agent context, and
-customer-facing content in one place, shared across engineers, tech writers, and agents alike.
+that work within it.
+
+In Hummingbird, this is not theoretical. The [`containers`][containers-repo] repository is
+developed in active collaboration with Red Hat tech writers, whose customer-facing product
+documentation lives in the same repository as the code — keeping internal conventions, agent
+context, and customer-facing content in one place, shared across engineers, tech writers, and
+agents alike.
 
 ### Knowledge Transfer Across Teams
 
-This model also answers a broader question: how does one team's expertise become available to
-agents maintained by another? The answer is the same as everything else in this system —
+The same principle — knowledge encoded in markdown, readable by humans and agents alike —
+also answers a broader question: how does one team's expertise become available to agents
+maintained by another? The answer is the same as everything else in this system —
 markdown. A UX team encodes their patterns and design practices in a skills file; the user
 design agent picks it up. The documentation team maintains their style guide, standards, and
 best practices — including Red Hat's documentation guidelines — encoded once and available to
@@ -148,14 +154,11 @@ interface between teams.
 Two agents are running in production today, built on the
 [Hummingbird Agent][hummingbird-agent-docs] platform. They operate on every merge request
 across the [`containers`][containers-repo] and [`rpms`][rpms-repo] repositories, which
-together see hundreds of commits per week — at a velocity that would be impossible to sustain
-manually.
+together see hundreds of commits per week — a throughput that would be impossible to review
+and maintain manually without agent assistance.
 
-All agentic work on Hummingbird is tracked in the [HUM-687 epic][hum-687]. Readers will find
-additional agents in planning there, such as the **merge conflict agent** — which will
-automatically resolve conflicts that arise when rule-based automation updates `.spec` files in
-the Hummingbird RPM pipeline and runs into Hummingbird-specific patches that need to be
-carried forward.
+More agents are in planning, such as the **merge conflict agent** — which will automatically
+resolve merge conflicts that arise during automated RPM updates.
 
 ### Failure Analysis Agent
 
@@ -187,15 +190,13 @@ reviewers free to focus on the issues that genuinely need their judgment.
 
 *Workflow definition: [`code-review.md`][code-review-workflow]*
 
-The full roadmap is tracked in the [HUM-687 epic][hum-687] — more agents, more automation,
-always with humans where they matter most.
-
+The full roadmap is tracked in the [HUM-687 epic][hum-687] — the work continues, one agent
+at a time.
 
 [hum-687]: https://redhat.atlassian.net/browse/HUM-687
 [containers-repo]: https://gitlab.com/redhat/hummingbird/containers
 [rpms-repo]: https://gitlab.com/redhat/hummingbird/rpms
 [hummingbird-agent-docs]: https://hummingbird-project.io/docs/background/tools/hummingbird-agent-design/
-[hummingbird-agent-tree]: https://gitlab.com/redhat/hummingbird/tools/-/tree/main/hummingbird-agent
 [failure-analysis-workflow]: https://gitlab.com/redhat/hummingbird/tools/-/blob/main/hummingbird-agent/workflows/analyze-failures.md
 [code-review-workflow]: https://gitlab.com/redhat/hummingbird/tools/-/blob/main/hummingbird-agent/workflows/code-review.md
 [vrothberg-article-linkedin]: https://www.linkedin.com/pulse/from-pair-programmer-autonomous-agent-how-actually-adopt-rothberg-qdyqe/
