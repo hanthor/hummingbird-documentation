@@ -78,6 +78,14 @@ complex work when that helps, but the standing requirement is approval — not c
 supervision of every agent run. The feedback between human judgment and agent behavior is what
 keeps the system trustworthy over time.
 
+The high-velocity automated pipeline — over 1,000 commits per week — operates through
+rule-based automation and does not involve agents; no human review is required there. The
+failure analysis agent does run at high volume — triggering on every pipeline, build, or test
+failure — but it produces analysis and comments, not code changes requiring approval. That
+alone saves hundreds of minutes per week of manual log triage. Agent work that requires human
+approval is scoped to SDLC tasks: feature requests, documentation, code review — a much lower
+volume where the requirement is entirely manageable.
+
 ### Security
 
 Agents run in containers — locally via Podman, in production on OpenShift. This is not a novel
@@ -215,6 +223,14 @@ reviewers free to focus on the issues that genuinely need their judgment.
 
 *Workflow definition: [`code-review.md`][code-review-workflow]*
 
+The near-term impact is measured in cycle time. A feature request that previously took weeks
+to move from intake through product assessment, implementation, documentation, and review can
+be compressed to days, sometimes hours. That changes what a small team can realistically take
+on. The longer-term bet is compounding returns: the foundation being built today — the
+documentation, the agent context, the production track record — is what makes it possible to
+absorb far more capable agents in the future. Nobody knows exactly what agents will be able to
+do in three years. What is knowable is that a team with this infrastructure already in place
+will be positioned to use those capabilities immediately; a team starting from scratch will not.
 
 [hum-687]: https://redhat.atlassian.net/browse/HUM-687
 [containers-repo]: https://gitlab.com/redhat/hummingbird/containers
