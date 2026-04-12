@@ -180,8 +180,10 @@ across the [`containers`][containers-repo] and [`rpms`][rpms-repo] repositories,
 together see hundreds of commits per week — a throughput that would be impossible to review
 and maintain manually without agent assistance.
 
-More agents are in planning, such as the **merge conflict agent** — which will automatically
-resolve merge conflicts that arise during automated RPM updates.
+More agents are under active development in parallel, with production deployment planned after
+Red Hat Summit 2026 — likely by end of Q2. One example is the **merge conflict agent** — which
+will automatically resolve merge conflicts that arise during automated RPM updates. The full
+roadmap is tracked in the [HUM-687 epic][hum-687].
 
 ### Failure Analysis Agent
 
@@ -213,8 +215,6 @@ reviewers free to focus on the issues that genuinely need their judgment.
 
 *Workflow definition: [`code-review.md`][code-review-workflow]*
 
-The full roadmap is tracked in the [HUM-687 epic][hum-687] — the work continues, one agent
-at a time.
 
 [hum-687]: https://redhat.atlassian.net/browse/HUM-687
 [containers-repo]: https://gitlab.com/redhat/hummingbird/containers
