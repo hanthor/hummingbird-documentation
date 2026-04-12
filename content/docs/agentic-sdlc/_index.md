@@ -78,6 +78,20 @@ complex work when that helps, but the standing requirement is approval — not c
 supervision of every agent run. The feedback between human judgment and agent behavior is what
 keeps the system trustworthy over time.
 
+### Security
+
+Agents run in containers — locally via Podman, in production on OpenShift. This is not a novel
+security model: it is the same approach the industry has long used for untrusted code, applied
+consistently. The Hummingbird agent platform is architecturally designed to ensure agents have
+no access to secrets or tokens. That single constraint effectively neutralizes prompt injection
+as a threat: an agent that cannot access credentials or act on external systems is, in practice,
+just another contributor — and the review process treats it as such. The same gatekeeping that
+applies to any third-party contribution applies to agent-produced work. The worst-case outcome
+is a low-quality merge request — and that is precisely what the review process, including the
+review agents themselves, is designed to catch.
+
+### Learning from Feedback
+
 This has a specific architectural implication: agents must learn from feedback. When a reviewer
 comments on an agent-produced merge request, the agent incorporates that feedback and updates
 its work. That feedback is also preserved — stored so that future agent runs can draw on it,
