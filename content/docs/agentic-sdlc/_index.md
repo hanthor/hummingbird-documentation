@@ -20,7 +20,7 @@ coordinating releases. For a small team maintaining hundreds of containers and b
 entire OS, staffing all of those functions manually does not scale — and agentic AI is what
 changes that equation. Where rule-based automation handles the deterministic, agents take on
 everything that has historically required a human to pick up, think through, and act on.
-Hummingbird is building toward becoming Red Hat's reference implementation for responsible
+Hummingbird is building toward becoming an open source reference implementation for responsible
 agentic AI in software engineering: demonstrating through production use, not promises, that
 this kind of automation can be adopted incrementally and grounded in engineering discipline.
 
