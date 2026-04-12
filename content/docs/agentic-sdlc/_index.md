@@ -7,13 +7,22 @@ aliases: [/l/agentic-sdlc]
 ---
 
 Project Hummingbird's core mission is velocity: shipping RPM updates, CVE fixes, and new
-container images as fast as possible. Managing 400+ packages and 1,750+ image builds with a
-24-hour security SLO makes automation not a nice-to-have, but the only viable path — and
-agentic AI is how Hummingbird is pushing that automation further than rule-based tooling alone
-can reach. Hummingbird is building toward becoming Red Hat's reference implementation for
-responsible agentic AI in software engineering: demonstrating through production use, not
-promises, that this kind of automation can be adopted incrementally and grounded in engineering
-discipline.
+container images as fast as possible. The pipeline already delivers at a scale unprecedented
+within Red Hat — consistently over 1,000 automated commits per week across the
+[`containers`][containers-repo] and [`rpms`][rpms-repo] repositories, a throughput that would
+be impossible to sustain manually. Managing 400+ packages and 1,750+ image builds with a
+24-hour security SLO, that pipeline is not a nice-to-have — it is what makes the project
+viable with a small team.
+
+The pipeline solves throughput. What it does not solve is the full software development
+lifecycle: assessing what to build, implementing it, documenting it, testing it, reviewing UX,
+coordinating releases. For a small team maintaining hundreds of containers and building an
+entire OS, staffing all of those functions manually does not scale — and agentic AI is what
+changes that equation. Where rule-based automation handles the deterministic, agents take on
+everything that has historically required a human to pick up, think through, and act on.
+Hummingbird is building toward becoming Red Hat's reference implementation for responsible
+agentic AI in software engineering: demonstrating through production use, not promises, that
+this kind of automation can be adopted incrementally and grounded in engineering discipline.
 
 ## The Agentic SDLC Vision
 
