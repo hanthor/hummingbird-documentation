@@ -10,7 +10,8 @@ Project Hummingbird's core mission is velocity: shipping RPM updates, CVE fixes,
 container images as fast as possible. The pipeline already delivers at a scale unprecedented
 within Red Hat — consistently over 1,000 automated commits per week across the
 [`containers`][containers-repo] and [`rpms`][rpms-repo] repositories, a throughput that would
-be impossible to sustain manually. Managing 400+ packages and 1,750+ image builds with a
+be impossible to sustain manually — work that in most Linux distributions is still performed
+manually by dedicated teams. Managing 400+ packages and 1,750+ image builds with a
 24-hour security SLO, that pipeline is not a nice-to-have — it is what makes the project
 viable with a small team.
 
@@ -220,6 +221,12 @@ explained an intentional design choice.
 
 The result is consistent, high-quality review coverage on every merge request, with human
 reviewers free to focus on the issues that genuinely need their judgment.
+
+The team is already pleased with the quality of the reviews — and this is only the beginning.
+A false positive costs nothing: a human reviewer reads it, disagrees, and moves on. The design
+ensures that bad agent output has no blast radius. And as human reviewers comment on
+agent-produced work, the agent learns and incorporates that feedback — improving with every
+iteration.
 
 *Workflow definition: [`code-review.md`][code-review-workflow]*
 
