@@ -36,7 +36,7 @@ Every change flows through the same lifecycle:
 container image, an RPM update, a feature request, a bug fix.
 
 **2. Analysis.** A **product management agent** assesses the request — evaluating feasibility,
-software licenses, priority, and fit against existing components and conventions. For
+priority, and fit against existing components and conventions. For
 straightforward requests it proceeds automatically; for complex or ambiguous ones it surfaces
 the relevant context and flags the case for human input before continuing. This is the work
 that normally sits in a product manager's queue.
@@ -101,11 +101,13 @@ review agents themselves, is designed to catch.
 
 ### Learning from Feedback
 
-Agents must learn from feedback. When a reviewer comments on an agent-produced merge request,
-the agent incorporates that feedback and updates its work. That feedback is also preserved —
-stored so that future agent runs can draw on it,
-improving with each iteration rather than repeating the same mistakes — an approach grounded
-in the frameworks established in Pascal Bornet's [*Agentic Artificial Intelligence*][bornet-book].
+Agents learn from feedback — and this is already working in production. When a reviewer
+comments on an agent-produced merge request, the agent reads those conversations, incorporates
+the feedback, and updates its work. It avoids re-raising issues already addressed and respects
+when a developer has explained an intentional design choice. That feedback is also preserved —
+stored so that future agent runs can draw on it, improving with each iteration rather than
+repeating the same mistakes — an approach grounded in the frameworks established in Pascal
+Bornet's [*Agentic Artificial Intelligence*][bornet-book].
 
 ## From Pair Programmer to Autonomous Agent
 
@@ -204,9 +206,10 @@ different images or architectures, it groups them so engineers see patterns rath
 overwhelming list of individual failures. Every finding includes links to the specific logs
 and artifacts so engineers can dig deeper without having to hunt.
 
-What previously required an engineer to open several dashboards, cross-reference logs, and
-manually piece together a root cause now happens automatically, before the author has finished
-their coffee.
+What previously required clicking through multiple levels of web UI, downloading logs, and
+working through thousands of lines of output to find a single root cause now happens
+automatically. It is not rocket science — but it is some of the most time-consuming and
+draining work an engineer can be asked to do repeatedly.
 
 *Workflow definition: [`analyze-failures.md`][failure-analysis-workflow]*
 
@@ -233,11 +236,11 @@ iteration.
 The near-term impact is measured in cycle time. A feature request that previously took weeks
 to move from intake through product assessment, implementation, documentation, and review can
 be compressed to days, sometimes hours. That changes what a small team can realistically take
-on. The longer-term bet is compounding returns: the foundation being built today — the
-documentation, the agent context, the production track record — is what makes it possible to
-absorb far more capable agents in the future. Nobody knows exactly what agents will be able to
-do in three years. What is knowable is that a team with this infrastructure already in place
-will be positioned to use those capabilities immediately; a team starting from scratch will not.
+on. The longer-term picture is equally straightforward: the system already delivers value
+today. If agents continue to improve, Hummingbird benefits more. If they plateau, the team
+continues to operate at a level that would otherwise require far more people. The
+infrastructure built now is not a bet on a technology that might not materialize — it is an
+investment that is already paying off, with optionality for more.
 
 [hum-687]: https://redhat.atlassian.net/browse/HUM-687
 [containers-repo]: https://gitlab.com/redhat/hummingbird/containers
