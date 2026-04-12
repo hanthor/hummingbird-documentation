@@ -100,9 +100,9 @@ review agents themselves, is designed to catch.
 
 ### Learning from Feedback
 
-This has a specific architectural implication: agents must learn from feedback. When a reviewer
-comments on an agent-produced merge request, the agent incorporates that feedback and updates
-its work. That feedback is also preserved — stored so that future agent runs can draw on it,
+Agents must learn from feedback. When a reviewer comments on an agent-produced merge request,
+the agent incorporates that feedback and updates its work. That feedback is also preserved —
+stored so that future agent runs can draw on it,
 improving with each iteration rather than repeating the same mistakes — an approach grounded
 in the frameworks established in Pascal Bornet's [*Agentic Artificial Intelligence*][bornet-book].
 
@@ -151,8 +151,8 @@ code can help write the documentation for it — capturing decisions, explaining
 drafting contribution guides. This is not a shortcut; it is the same pair-programming model
 applied to a different kind of output. This is how Hummingbird built its documentation from
 the start: engineers worked alongside agents to draft and improve it in the same way they
-wrote code — iteratively, collaboratively,
-with humans in the lead. The result is a virtuous cycle: better docs make agents more capable,
+wrote code — iteratively, collaboratively, with humans in the lead. The result is a virtuous
+cycle: better docs make agents more capable,
 and more capable agents help produce better docs.
 
 Tech writers are not a prerequisite — engineers writing clear, intentional documentation with
@@ -185,8 +185,8 @@ interface between teams.
 Two agents are running in production today, built on the
 [Hummingbird Agent][hummingbird-agent-docs] platform. They operate on every merge request
 across the [`containers`][containers-repo] and [`rpms`][rpms-repo] repositories, which
-together see hundreds of commits per week — a throughput that would be impossible to review
-and maintain manually without agent assistance.
+together see over 1,000 automated commits per week — a throughput that would be impossible to
+review and maintain manually without agent assistance.
 
 More agents are under active development in parallel, with production deployment planned after
 Red Hat Summit 2026 — likely by end of Q2. One example is the **merge conflict agent** — which
