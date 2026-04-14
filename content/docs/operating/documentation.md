@@ -62,9 +62,18 @@ module:
       mounts:
         - {source: 'README.md', target: content/snippets/readme.md}
         - {source: 'CONTRIBUTING.md', target: content/snippets/contributing.md}
-        - {source: 'documentation/contributing', target: content/docs/contributing, includeFiles: "*.md"}
-        - {source: 'documentation/background', target: content/docs/background/containers, includeFiles: "*.md"}
-        - {source: 'documentation/ci-scripts', target: content/docs/background/containers/ci-scripts, includeFiles: "*.md"}
+        - source: 'documentation/contributing'
+          target: content/docs/contributing
+          files:
+            - '**/*.md'
+        - source: 'documentation/background'
+          target: content/docs/background/containers
+          files:
+            - '**/*.md'
+        - source: 'documentation/ci-scripts'
+          target: content/docs/background/containers/ci-scripts
+          files:
+            - '**/*.md'
     - path: gitlab.com/redhat/hummingbird/rpms
       mounts:
         - {source: 'CONTRIBUTING.md', target: content/snippets/rpms-contributing.md}
