@@ -77,7 +77,7 @@ params:
 
   home:
     - title: Using a container image
-      url: /docs/using/
+      url: /docs/using/overview/
       url_text: Start here if you want to use a Project Hummingbird container image
       icon: fas fa-cube
     - title: Contributing to a container image
