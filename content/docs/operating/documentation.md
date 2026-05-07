@@ -35,22 +35,27 @@ Documentation content comes from four repositories:
    Documentation focused on RPM packages:
    - `CONTRIBUTING.md` - Contributing guide for RPM packages
 
-3. **[Public documentation repository][docs-repo]** -
+3. **[K8s test pipeline repository][k8s-test-pipeline-repo]** -
+   Documentation for Kubernetes integration testing:
+   - `documentation/` - Pipeline design, test format, and EaaS debugging
+
+4. **[Public documentation repository][docs-repo]** -
    Infrastructure and user guides:
    - `content/docs/using/` - End-user guides for using container images
    - `content/docs/operating/` - Infrastructure operation guides (Konflux, GitLab, etc.)
    - `content/docs/background/` - General architecture and concepts
 
-4. **[Internal documentation repository][internal-docs-repo]** -
+5. **[Internal documentation repository][internal-docs-repo]** -
    Internal-only confidential content
 
 ### How They Work Together
 
 The repositories are layered using Hugo Modules:
 
-1. **Public documentation** imports specific directories from the containers and rpms repositories
+1. **Public documentation** imports specific directories from the containers, rpms, tools,
+   and k8s-test-pipeline repositories
 2. **Internal documentation** imports the public documentation (which transitively includes
-   the containers and rpms documentation)
+   the imported repository documentation)
 
 **Hugo Module Mounts:**
 
@@ -96,7 +101,7 @@ make serve  # Available at http://localhost:1314/
 
 ### Recommended Setup
 
-For the best development experience, set up all three repositories with
+For the best development experience, set up all repositories with
 [direnv]:
 
 ```bash
@@ -106,6 +111,8 @@ cd ~/git/hummingbird
 # Clone all repositories
 git clone https://gitlab.com/redhat/hummingbird/containers
 git clone https://gitlab.com/redhat/hummingbird/rpms
+git clone https://gitlab.com/redhat/hummingbird/tools
+git clone https://gitlab.com/redhat/hummingbird/pipelines/k8s-test-pipeline
 git clone https://gitlab.com/redhat/hummingbird/documentation
 git clone https://gitlab.com/redhat/hummingbird/internal-documentation
 
@@ -113,6 +120,8 @@ git clone https://gitlab.com/redhat/hummingbird/internal-documentation
 cat > .envrc << 'EOF'
 export CONTAINERS_REPO_PATH=$(pwd)/containers
 export RPMS_REPO_PATH=$(pwd)/rpms
+export TOOLS_REPO_PATH=$(pwd)/tools
+export K8S_TEST_PIPELINE_REPO_PATH=$(pwd)/k8s-test-pipeline
 export DOCUMENTATION_REPO_PATH=$(pwd)/documentation
 EOF
 direnv allow
@@ -252,6 +261,7 @@ When adding new documentation, place it in the most appropriate section.
 
 [containers-repo]: https://gitlab.com/redhat/hummingbird/containers
 [rpms-repo]: https://gitlab.com/redhat/hummingbird/rpms
+[k8s-test-pipeline-repo]: https://gitlab.com/redhat/hummingbird/pipelines/k8s-test-pipeline
 [docs-repo]: https://gitlab.com/redhat/hummingbird/documentation
 [internal-docs-repo]: https://gitlab.com/redhat/hummingbird/internal-documentation
 [direnv]: https://direnv.net/

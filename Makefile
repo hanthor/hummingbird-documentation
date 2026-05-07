@@ -31,6 +31,15 @@ ifdef TOOLS_REPO_PATH
 	endif
 endif
 
+ifdef K8S_TEST_PIPELINE_REPO_PATH
+	ifdef RUNNING_IN_CONTAINER
+		HUGO_MODULE_REPLACEMENTS += gitlab.com/redhat/hummingbird/pipelines/k8s-test-pipeline->/k8s-test-pipeline
+	else
+		PODMAN_ADDITIONAL_ARGS += -v $(K8S_TEST_PIPELINE_REPO_PATH):/k8s-test-pipeline:z -e K8S_TEST_PIPELINE_REPO_PATH=$(K8S_TEST_PIPELINE_REPO_PATH)
+		HUGO_MODULE_REPLACEMENTS += gitlab.com/redhat/hummingbird/pipelines/k8s-test-pipeline->$(basename $(K8S_TEST_PIPELINE_REPO_PATH))
+	endif
+endif
+
 ifneq ($(HUGO_MODULE_REPLACEMENTS),)
 	export HUGO_MODULE_REPLACEMENTS := $(subst $(space),$(comma),$(HUGO_MODULE_REPLACEMENTS))
 endif
