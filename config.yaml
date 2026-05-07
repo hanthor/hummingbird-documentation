@@ -38,6 +38,9 @@ module:
     - path: gitlab.com/redhat/hummingbird/tools
       mounts:
         - {source: 'documentation', target: content/docs/background/tools, includeFiles: "*.md"}
+    - path: gitlab.com/redhat/hummingbird/pipelines/k8s-test-pipeline
+      mounts:
+        - {source: 'documentation', target: content/docs/background/k8s-test-pipeline, includeFiles: "*.md"}
 
 # Image processing configuration.
 imaging:
