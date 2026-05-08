@@ -58,23 +58,6 @@ check:
   rules:
     - !reference [.rules, mr]
 
-deploy_hugo_tag:
-  environment:
-    name: hugo-tag-deployment
-    action: access
-  script:
-    - |
-      DEPLOY_GIT_TAG=v1.0.0
-      git tag -f "${DEPLOY_GIT_TAG}"
-      git push --force --no-verify \
-        "https://git:${HUGO_TAG_DEPLOYMENT_GITLAB_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}.git" \
-        "${DEPLOY_GIT_TAG}"
-  allow_failure: true
-  rules:
-    - !reference [.rules, mr_manual]
-    - !reference [.rules, push]
-    - !reference [.rules, web]
-
 build:
   tags: [big-runner]
   script:
@@ -145,7 +128,6 @@ stop-mr:
 
 trigger_internal_documentation:
   stage: deploy
-  needs: [{job: deploy_hugo_tag, optional: true}]
   variables:
     PARENT_PROJECT_PATH: $CI_PROJECT_PATH
   trigger:
