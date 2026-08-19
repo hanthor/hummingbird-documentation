@@ -158,10 +158,6 @@ signals rather than an OpenTelemetry Lambda extension:
 - Low-traffic utility Lambdas are covered by the same YACE allowlist
   when tagged `app-code=RPRM-001`.
 
-If/when these services migrate to OpenShift, they fall under the
-standard spoke collection paths (Alloy scrape + `loki.source`) with no
-additional plumbing.
-
 ### Log Collection
 
 Container stdout/stderr is tailed by spoke Alloy using
