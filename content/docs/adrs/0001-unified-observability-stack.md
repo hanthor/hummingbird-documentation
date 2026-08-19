@@ -89,14 +89,13 @@ Mimir ruler (PromQL) → Mimir Alertmanager → Slack / email
 
 ### Alert Routing
 
-| Severity        | Channel                                   |
-|-----------------|-------------------------------------------|
-| `critical`      | Slack `#hummingbird-infra-alerts` + email |
-| `info`          | Slack `#hummingbird-infra-alerts`         |
-| everything else | Slack `#hummingbird-infra-alerts` + email |
+| Severity        | Channel       |
+|-----------------|---------------|
+| `critical`      | Slack + email |
+| `info`          | Slack         |
+| everything else | Slack + email |
 
-Email goes to `hummingbird-alerts@redhat.com`. Production only; staging
-is a blackhole.
+Production only; staging is a blackhole.
 
 ### Deployment Model
 
