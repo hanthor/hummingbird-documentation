@@ -7,7 +7,7 @@ aliases: [/l/adr-0002]
 - **Status:** Proposed
 - **Date:** 2026-08-24
 - **Author:** Michael Hofmann
-- **Jira:** [HUM-6342][hum-6342] (spike)
+- **Jira:** [HUM-6342] (spike)
 
 ## Context
 
@@ -61,20 +61,20 @@ Renovate CronJob definitions and agent deployment manifests.
 
 ### MR Creation Entrypoints
 
-| Entrypoint                        | Repo                 | Trigger                     | What it creates                                                 |
-| --------------------------------- | -------------------- | --------------------------- | --------------------------------------------------------------- |
-| `dist_git_update_multi_mr.sh`     | rpms                 | GitLab schedule (every 4h)  | One MR per package needing Fedora dist-git sync                 |
-| `upstream_update_multi_mr.sh`     | rpms                 | GitLab schedule             | One MR per package with a newer upstream release                |
-| `rebuild_multi_mr.sh`             | rpms                 | Manual (operator-triggered) | One MR per package needing rebuild                              |
-| `create_lockfile_update_mrs.sh`   | containers           | GitLab schedule             | One MR per image with changed RPM lockfiles                     |
-| `ci/create_mr.sh` (metrics)       | containers           | GitLab schedule (daily)     | Single chore MR for metrics report                              |
-| Renovate (rpms)                   | rpms                 | K8s CronJob (hourly)        | Tekton pipeline digest and Konflux release-catalog updates only |
-| Renovate (containers)             | containers           | K8s CronJob (hourly)        | Dependency updates, lockfile maintenance, pipeline migration    |
-| Renovate (tools/infra/k8s-test)   | tools/infra/k8s-test | K8s CronJob (hourly)        | Dependency updates                                              |
-| CVE analysis (`advisory_handler`) | CEE advisories       | K8s CronJob (30 min)        | Advisory MRs; handles rebase on conflicts                       |
-| `/cve` skill                      | rpms                 | Manual (Cursor/Claude)      | Fix MRs from staged CVE analysis data in Jira                   |
-| `gitlab_sync`                     | tools                | Various                     | File sync MRs with poll, rebase, and best-effort approve        |
-| Manual dev workflows              | rpms/containers      | Human on dev machine        | Package updates, CVE fixes, spec changes                        |
+| Entrypoint                                             | Repo                 | Trigger                     | What it creates                                                 |
+| ------------------------------------------------------ | -------------------- | --------------------------- | --------------------------------------------------------------- |
+| [`dist_git_update_multi_mr.sh`][rpms-dist-git]         | rpms                 | GitLab schedule (every 4h)  | One MR per package needing Fedora dist-git sync                 |
+| [`upstream_update_multi_mr.sh`][rpms-upstream]         | rpms                 | GitLab schedule             | One MR per package with a newer upstream release                |
+| [`rebuild_multi_mr.sh`][rpms-rebuild]                  | rpms                 | Manual (operator-triggered) | One MR per package needing rebuild                              |
+| [`create_lockfile_update_mrs.sh`][containers-lockfile] | containers           | GitLab schedule             | One MR per image with changed RPM lockfiles                     |
+| [`ci/create_mr.sh`][containers-create-mr] (metrics)    | containers           | GitLab schedule (daily)     | Single chore MR for metrics report                              |
+| Renovate (rpms)                                        | rpms                 | K8s CronJob (hourly)        | Tekton pipeline digest and Konflux release-catalog updates only |
+| Renovate (containers)                                  | containers           | K8s CronJob (hourly)        | Dependency updates, lockfile maintenance, pipeline migration    |
+| Renovate (tools/infra/k8s-test)                        | tools/infra/k8s-test | K8s CronJob (hourly)        | Dependency updates                                              |
+| CVE analysis (`advisory_handler`)                      | CEE advisories       | K8s CronJob (30 min)        | Advisory MRs; handles rebase on conflicts                       |
+| `/cve` skill                                           | rpms                 | Manual (Cursor/Claude)      | Fix MRs from staged CVE analysis data in Jira                   |
+| `gitlab_sync`                                          | tools                | Various                     | File sync MRs with poll, rebase, and best-effort approve        |
+| Manual dev workflows                                   | rpms/containers      | Human on dev machine        | Package updates, CVE fixes, spec changes                        |
 
 ### MR Creation Mechanism: Git Push Options
 
@@ -473,7 +473,7 @@ This migration directly enables centralized MR creation.
 ### Renovate Deployment
 
 Deployed as Kubernetes CronJobs in the infrastructure repo
-(`kubernetes/renovate/20-cronjobs.yml.j2`):
+([`kubernetes/renovate/20-cronjobs.yml.j2`][infra-renovate-cronjobs]):
 
 - 5 repos: containers, infrastructure, k8s-test-pipeline, rpms, tools
 - Each gets its own CronJob running hourly with
@@ -497,6 +497,45 @@ interface points for a workqueue are:
 
 The workqueue integration point: when `/cve` or CVE analysis determines
 an MR should be created, that request becomes a work item.
+
+### RPM-to-Container Pipeline Flow
+
+A single RPM spec change triggers a cascade that spans both repos and
+multiple build systems. The full flow is documented in the
+[RPM Pipeline][rpm-pipeline] and [Image Pipeline][image-pipeline] docs.
+
+```text
+RPM spec change (rpms repo)
+  → MR validation (GitLab CI + Konflux build + Testing Farm)
+  → Merge to main
+  → Konflux RPM build (Tekton PipelineRun per package, mock hermetic)
+  → RPM signing (Kerberos-based)
+  → Publish to Pulp (packages.redhat.com)
+  → Lockfile update detects new RPM versions (containers repo)
+  → Lockfile MR created (Renovate or create_lockfile_update_mrs.sh)
+  → Container build (Konflux, multi-arch)
+  → Container testing (Testing Farm + K8s tests)
+  → Enterprise Contract validation (Conforma)
+  → Release to Quay.io
+```
+
+Key observations for the workqueue:
+
+- The cascade is implicit — there is no explicit trigger from RPM
+  publish to container lockfile update. Lockfile updates discover new
+  RPMs by polling Pulp (via `make all-host FORCE_REFRESH=true` or
+  Renovate's RPM lockfile maintenance).
+- A single RPM change can fan out to many container images (any image
+  that includes that package in its lockfile).
+- The RPM pipeline has 5 stages (spec change, MR validation, build,
+  signing, publishing). The container pipeline has 6 stages (source
+  templates, generation, build, testing, Enterprise Contract, release).
+- Testing Farm runs integration tests on merge requests only, not on
+  main branch builds. Container tests include reverse dependency
+  testing (rebuilding dependent images locally in the test
+  environment).
+- Enterprise Contract (Conforma) validates supply chain security,
+  hermetic builds, and policy compliance before release.
 
 ## Decision
 
@@ -606,56 +645,59 @@ Known consequences of any workqueue approach:
 
 ### Infrastructure repo
 
-| Path                                   | Contents                               |
-| -------------------------------------- | -------------------------------------- |
-| `kubernetes/renovate/`                 | Renovate CronJob definitions (5 repos) |
-| `kubernetes/hummingbird-agent/`        | Agent deployment manifests (8 files)   |
-| `kubernetes/hummingbird-cve-analysis/` | CVE analysis CronJob                   |
-| `aws/hummingbird-agent/`               | Agent SQS/SNS SAM templates            |
+| Path                                                | Contents                               |
+| --------------------------------------------------- | -------------------------------------- |
+| [`kubernetes/renovate/`][infra-renovate]            | Renovate CronJob definitions (5 repos) |
+| [`kubernetes/hummingbird-agent/`][infra-agent]      | Agent deployment manifests (8 files)   |
+| [`kubernetes/hummingbird-cve-analysis/`][infra-cve] | CVE analysis CronJob                   |
+| [`aws/hummingbird-agent/`][infra-agent-aws]         | Agent SQS/SNS SAM templates            |
 
 ### Tools repo
 
-| Path                                      | Contents                                                                     |
-| ----------------------------------------- | ---------------------------------------------------------------------------- |
-| `hummingbird-agent/`                      | Agent framework (loop, sandbox, models, data sources, workflows)             |
-| `hummingbird-agent/workflows/`            | Workflow definitions (`analyze-failures`, `code-review`, `renovate-babysit`) |
-| `hummingbird-agent/workflows/repo-rules/` | Per-project review rules (`hummingbird-rpms.md`)                             |
-| `hummingbird-cve-analysis/`               | CVE analysis pipeline (preserve)                                             |
-| `hummingbird-dashboard/`                  | Dashboard web app (preserve)                                                 |
-| `mr-auto-approver/`                       | Lambda: rule-based MR approval                                               |
-| `hummingbird-mr-human-tracker/`           | Lambda: tracks human fixes on bot MRs                                        |
-| `gitlab-ci/gitlab_sync/`                  | File sync MR creation with rebase                                            |
-| `gitlab-event-forwarder/`                 | Webhook → SNS bridge                                                         |
-| `hummingbird-events-topic/`               | SNS topic infrastructure                                                     |
+| Path                                                          | Contents                                                                     |
+| ------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| [`hummingbird-agent/`][tools-agent]                           | Agent framework (loop, sandbox, models, data sources, workflows)             |
+| [`hummingbird-agent/workflows/`][tools-workflows]             | Workflow definitions (`analyze-failures`, `code-review`, `renovate-babysit`) |
+| [`hummingbird-agent/workflows/repo-rules/`][tools-repo-rules] | Per-project review rules (`hummingbird-rpms.md`)                             |
+| [`hummingbird-cve-analysis/`][tools-cve]                      | CVE analysis pipeline (preserve)                                             |
+| [`hummingbird-dashboard/`][tools-dashboard]                   | Dashboard web app (preserve)                                                 |
+| [`mr-auto-approver/`][tools-approver]                         | Lambda: rule-based MR approval                                               |
+| [`hummingbird-mr-human-tracker/`][tools-tracker]              | Lambda: tracks human fixes on bot MRs                                        |
+| [`gitlab-ci/gitlab_sync/`][tools-sync]                        | File sync MR creation with rebase                                            |
+| [`gitlab-event-forwarder/`][tools-forwarder]                  | Webhook → SNS bridge                                                         |
+| [`hummingbird-events-topic/`][tools-events]                   | SNS topic infrastructure                                                     |
 
 ### RPMs repo
 
-| Path                             | Contents                                                    |
-| -------------------------------- | ----------------------------------------------------------- |
-| `ci/create_mr.sh`                | Shared MR creation helper (push options, dedup by branch)   |
-| `ci/dist_git_update_multi_mr.sh` | Dist-git sync: commit-all → reset → cherry-pick per package |
-| `ci/upstream_update_multi_mr.sh` | Upstream version bumps: same cherry-pick pattern            |
-| `ci/rebuild_multi_mr.sh`         | Rebuild MR splitter (with `--force` for stale branches)     |
-| `ci/dist_git.py`                 | CLI for import/update/sync/rebuild operations               |
-| `ci/check_konflux_statuses.py`   | Polls Konflux external statuses before approval             |
-| `ci/claude_resolve_conflict.sh`  | AI-assisted conflict resolution for dist-git MRs            |
-| `metadata/<package>.json`        | Per-package metadata (upstream URL, CVE mapping, status)    |
+| Path                                                 | Contents                                                    |
+| ---------------------------------------------------- | ----------------------------------------------------------- |
+| [`ci/create_mr.sh`][rpms-create-mr]                  | Shared MR creation helper (push options, dedup by branch)   |
+| [`ci/dist_git_update_multi_mr.sh`][rpms-dist-git]    | Dist-git sync: commit-all → reset → cherry-pick per package |
+| [`ci/upstream_update_multi_mr.sh`][rpms-upstream]    | Upstream version bumps: same cherry-pick pattern            |
+| [`ci/rebuild_multi_mr.sh`][rpms-rebuild]             | Rebuild MR splitter (with `--force` for stale branches)     |
+| [`ci/dist_git.py`][rpms-dist-git-py]                 | CLI for import/update/sync/rebuild operations               |
+| [`ci/check_konflux_statuses.py`][rpms-konflux-check] | Polls Konflux external statuses before approval             |
+| [`ci/claude_resolve_conflict.sh`][rpms-conflict]     | AI-assisted conflict resolution for dist-git MRs            |
+| `metadata/<package>.json`                            | Per-package metadata (upstream URL, CVE mapping, status)    |
 
 ### Containers repo
 
-| Path                               | Contents                                                         |
-| ---------------------------------- | ---------------------------------------------------------------- |
-| `ci/create_lockfile_update_mrs.sh` | Per-image lockfile MR creation (force-with-lease, content dedup) |
-| `ci/create_mr.sh`                  | Generic chore MR helper (force-with-lease, no dedup)             |
-| `ci/internal/shared_lib.sh`        | Shared utilities (`get_distro_variants`, build helpers)          |
-| `images/<name>/`                   | Per-image Containerfiles and RPM lockfiles                       |
+| Path                                                      | Contents                                                         |
+| --------------------------------------------------------- | ---------------------------------------------------------------- |
+| [`ci/create_lockfile_update_mrs.sh`][containers-lockfile] | Per-image lockfile MR creation (force-with-lease, content dedup) |
+| [`ci/create_mr.sh`][containers-create-mr]                 | Generic chore MR helper (force-with-lease, no dedup)             |
+| [`ci/internal/shared_lib.sh`][containers-shared-lib]      | Shared utilities (`get_distro_variants`, build helpers)          |
+| `images/<name>/`                                          | Per-image Containerfiles and RPM lockfiles                       |
 
+[containers-create-mr]: https://gitlab.com/redhat/hummingbird/containers/-/blob/main/ci/create_mr.sh
+[containers-lockfile]: https://gitlab.com/redhat/hummingbird/containers/-/blob/main/ci/create_lockfile_update_mrs.sh
 [containers-repo]: https://gitlab.com/redhat/hummingbird/containers
+[containers-shared-lib]: https://gitlab.com/redhat/hummingbird/containers/-/blob/main/ci/internal/shared_lib.sh
 [gh-aw]: https://github.github.com/gh-aw/
 [gh-aw-arch]: https://github.github.com/gh-aw/introduction/architecture/
 [gh-aw-safe-outputs]: https://github.github.com/gh-aw/reference/safe-outputs/
-[hum-851]: https://redhat.atlassian.net/browse/HUM-851
 [hum-6342]: https://redhat.atlassian.net/browse/HUM-6342
+[hum-851]: https://redhat.atlassian.net/browse/HUM-851
 [hum-852]: https://redhat.atlassian.net/browse/HUM-852
 [hum-853]: https://redhat.atlassian.net/browse/HUM-853
 [hum-854]: https://redhat.atlassian.net/browse/HUM-854
@@ -665,4 +707,28 @@ Known consequences of any workqueue approach:
 [hum-858]: https://redhat.atlassian.net/browse/HUM-858
 [hum-859]: https://redhat.atlassian.net/browse/HUM-859
 [hummingbird-agent-docs]: https://hummingbird-project.io/docs/background/tools/hummingbird-agent-design/
+[image-pipeline]: https://gitlab.com/redhat/hummingbird/containers/-/blob/main/documentation/background/image-pipeline.md
+[infra-agent]: https://gitlab.com/redhat/hummingbird/infrastructure/-/tree/main/kubernetes/hummingbird-agent
+[infra-agent-aws]: https://gitlab.com/redhat/hummingbird/infrastructure/-/tree/main/aws/hummingbird-agent
+[infra-cve]: https://gitlab.com/redhat/hummingbird/infrastructure/-/tree/main/kubernetes/hummingbird-cve-analysis
+[infra-renovate]: https://gitlab.com/redhat/hummingbird/infrastructure/-/tree/main/kubernetes/renovate
+[infra-renovate-cronjobs]: https://gitlab.com/redhat/hummingbird/infrastructure/-/blob/main/kubernetes/renovate/20-cronjobs.yml.j2
+[rpm-pipeline]: https://gitlab.com/redhat/hummingbird/rpms/-/blob/main/documentation/background/rpm-pipeline.md
+[rpms-conflict]: https://gitlab.com/redhat/hummingbird/rpms/-/blob/main/ci/claude_resolve_conflict.sh
+[rpms-create-mr]: https://gitlab.com/redhat/hummingbird/rpms/-/blob/main/ci/create_mr.sh
+[rpms-dist-git]: https://gitlab.com/redhat/hummingbird/rpms/-/blob/main/ci/dist_git_update_multi_mr.sh
+[rpms-dist-git-py]: https://gitlab.com/redhat/hummingbird/rpms/-/blob/main/ci/dist_git.py
+[rpms-konflux-check]: https://gitlab.com/redhat/hummingbird/rpms/-/blob/main/ci/check_konflux_statuses.py
+[rpms-rebuild]: https://gitlab.com/redhat/hummingbird/rpms/-/blob/main/ci/rebuild_multi_mr.sh
 [rpms-repo]: https://gitlab.com/redhat/hummingbird/rpms
+[rpms-upstream]: https://gitlab.com/redhat/hummingbird/rpms/-/blob/main/ci/upstream_update_multi_mr.sh
+[tools-agent]: https://gitlab.com/redhat/hummingbird/tools/-/tree/main/hummingbird-agent
+[tools-approver]: https://gitlab.com/redhat/hummingbird/tools/-/tree/main/mr-auto-approver
+[tools-cve]: https://gitlab.com/redhat/hummingbird/tools/-/tree/main/hummingbird-cve-analysis
+[tools-dashboard]: https://gitlab.com/redhat/hummingbird/tools/-/tree/main/hummingbird-dashboard
+[tools-events]: https://gitlab.com/redhat/hummingbird/tools/-/tree/main/hummingbird-events-topic
+[tools-forwarder]: https://gitlab.com/redhat/hummingbird/tools/-/tree/main/gitlab-event-forwarder
+[tools-repo-rules]: https://gitlab.com/redhat/hummingbird/tools/-/tree/main/hummingbird-agent/workflows/repo-rules
+[tools-sync]: https://gitlab.com/redhat/hummingbird/tools/-/tree/main/gitlab-ci/gitlab_sync
+[tools-tracker]: https://gitlab.com/redhat/hummingbird/tools/-/tree/main/hummingbird-mr-human-tracker
+[tools-workflows]: https://gitlab.com/redhat/hummingbird/tools/-/tree/main/hummingbird-agent/workflows
