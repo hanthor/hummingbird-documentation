@@ -7,7 +7,7 @@ aliases: [/l/adr-0002]
 - **Status:** Proposed
 - **Date:** 2026-08-24
 - **Author:** Michael Hofmann
-- **Jira:** TBD (spike ticket)
+- **Jira:** [HUM-6342][hum-6342] (spike)
 
 ## Context
 
@@ -655,6 +655,7 @@ Known consequences of any workqueue approach:
 [gh-aw-arch]: https://github.github.com/gh-aw/introduction/architecture/
 [gh-aw-safe-outputs]: https://github.github.com/gh-aw/reference/safe-outputs/
 [hum-851]: https://redhat.atlassian.net/browse/HUM-851
+[hum-6342]: https://redhat.atlassian.net/browse/HUM-6342
 [hum-852]: https://redhat.atlassian.net/browse/HUM-852
 [hum-853]: https://redhat.atlassian.net/browse/HUM-853
 [hum-854]: https://redhat.atlassian.net/browse/HUM-854
