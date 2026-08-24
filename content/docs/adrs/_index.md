@@ -13,3 +13,4 @@ made across the Hummingbird project, along with their context and consequences.
 | ID       | Title                                                              | Status      | Date       |
 |----------|--------------------------------------------------------------------|-------------|------------|
 | ADR-0001 | [Unified Observability Stack](0001-unified-observability-stack.md) | Implemented | 2026-07-19 |
+| ADR-0002 | [AI-Assisted SDLC Workqueue](0002-ai-assisted-sdlc-workqueue.md)   | Proposed    | 2026-08-24 |
