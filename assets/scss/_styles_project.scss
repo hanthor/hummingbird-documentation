@@ -32,3 +32,11 @@
   font-weight: 600;
   text-shadow: 0 0 16px rgba(0, 0, 0, 0.6);
 }
+
+/* Companion page icon in sidebar (internal site only) */
+.td-sidebar-nav {
+  .companion-icon {
+    font-size: 0.75em;
+    opacity: 0.6;
+  }
+}

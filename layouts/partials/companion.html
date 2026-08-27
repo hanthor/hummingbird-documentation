@@ -1,6 +1,17 @@
 {{ if isset .Params "companion" }}
+{{ if eq hugo.Environment "internal" }}
+<div class="alert alert-warning" role="alert">
+  {{ if .Params.companion }}
+    {{ $url := urls.Parse .Page.Permalink }}
+    Some of this information is meant for Red Hat Associates only. Do not share this information outside Red Hat unless it is also included on the <a href="{{ printf "%s%s" .Site.Params.companionHost $url.Path }}">public companion page</a>.
+  {{ else }}
+    This information is meant for Red Hat Associates only. Do not share this information outside Red Hat.
+  {{ end }}
+</div>
+{{ else }}
 <div class="alert alert-info" role="alert">
     {{ $url := urls.Parse .Page.Permalink }}
     This page has an <a href="{{ printf "%s%s" .Site.Params.companionHost $url.Path }}">internal companion page</a> which contains additional information.
 </div>
+{{ end }}
 {{ end }}
