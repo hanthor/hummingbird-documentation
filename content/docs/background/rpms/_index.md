@@ -1,7 +1,7 @@
 ---
-title: Contributing to Hummingbird RPMs
+title: RPMs repository
 description: >-
-  How to contribute to Project Hummingbird RPM packages.
+  Background documentation and contributing guide for Project Hummingbird RPM packages.
 weight: 10
 aliases: [/l/contributing-rpms]
 ---
