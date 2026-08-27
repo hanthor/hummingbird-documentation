@@ -21,31 +21,39 @@ sites:
 
 ## Documentation Repositories
 
-Documentation content comes from four repositories:
+Documentation content comes from six repositories:
 
 1. **[Containers repository][containers-repo]** -
-   Documentation focused on container images:
+   Documentation focused on container images (cross-cutting layout):
    - `documentation/contributing/` - How to add and modify container images
    - `documentation/background/` - Container image architecture and reference docs
    - `documentation/ci-scripts/` - CI script documentation
+   - `documentation/operating/` - Operator runbooks for image maintenance
+   - `documentation/using/` - End-user guides (custom CA certificates, etc.)
    - `README.md` - User guide
    - `CONTRIBUTING.md` - Quickstart guide
 
 2. **[RPMs repository][rpms-repo]** -
-   Documentation focused on RPM packages:
+   Documentation focused on RPM packages (cross-cutting layout):
+   - `documentation/background/` - RPM pipeline architecture and Konflux deployment
+   - `documentation/operating/` - Operator runbooks for package management
    - `CONTRIBUTING.md` - Contributing guide for RPM packages
 
-3. **[K8s test pipeline repository][k8s-test-pipeline-repo]** -
-   Documentation for Kubernetes integration testing:
+3. **[Tools repository][tools-repo]** -
+   Documentation for infrastructure tools and services (per-component layout):
+   - `documentation/` - One page per tool/service (flat structure)
+
+4. **[K8s test pipeline repository][k8s-test-pipeline-repo]** -
+   Documentation for Kubernetes integration testing (per-component layout):
    - `documentation/` - Pipeline design, test format, and EaaS debugging
 
-4. **[Public documentation repository][docs-repo]** -
-   Infrastructure and user guides:
+5. **[Public documentation repository][docs-repo]** -
+   Site infrastructure and cross-cutting guides:
    - `content/docs/using/` - End-user guides for using container images
    - `content/docs/operating/` - Infrastructure operation guides (Konflux, GitLab, etc.)
    - `content/docs/background/` - General architecture and concepts
 
-5. **[Internal documentation repository][internal-docs-repo]** -
+6. **[Internal documentation repository][internal-docs-repo]** -
    Internal-only confidential content
 
 ### How They Work Together
@@ -70,14 +78,48 @@ module:
         - {source: 'documentation/contributing', target: content/docs/contributing, includeFiles: "*.md"}
         - {source: 'documentation/background', target: content/docs/background/containers, includeFiles: "*.md"}
         - {source: 'documentation/ci-scripts', target: content/docs/background/containers/ci-scripts, includeFiles: "*.md"}
+        - {source: 'documentation/operating', target: content/docs/operating, includeFiles: "*.md"}
+        - {source: 'documentation/using', target: content/docs/using, includeFiles: "*.md"}
     - path: gitlab.com/redhat/hummingbird/rpms
       mounts:
         - {source: 'CONTRIBUTING.md', target: content/snippets/rpms-contributing.md}
+        - {source: 'documentation/background', target: content/docs/background/rpms, includeFiles: "*.md"}
+        - {source: 'documentation/operating', target: content/docs/operating, includeFiles: "*.md"}
+    - path: gitlab.com/redhat/hummingbird/tools
+      mounts:
+        - {source: 'documentation', target: content/docs/background/tools, includeFiles: "*.md"}
+    - path: gitlab.com/redhat/hummingbird/pipelines/k8s-test-pipeline
+      mounts:
+        - {source: 'documentation', target: content/docs/background/k8s-test-pipeline, includeFiles: "*.md"}
 ```
 
 For README.md and CONTRIBUTING.md, front matter is provided via wrapper files.
 
 This creates a unified documentation site from multiple repositories without duplication.
+
+### Documentation Layout Patterns
+
+Source repositories use one of two layout patterns depending on their content:
+
+**Cross-cutting layout** (containers, rpms): The repository documents cross-cutting
+concerns like contributing, operating, and background information. Documentation is
+organized into subdirectories matching the site sections:
+
+- `documentation/background/` - Explanation and reference material
+- `documentation/contributing/` - How to contribute
+- `documentation/operating/` - Operator runbooks
+- `documentation/using/` - End-user guides
+
+Each subdirectory is mounted into the matching site section, so operating docs from
+different repositories appear together under Operating.
+
+**Per-component layout** (tools, k8s-test-pipeline): The repository is a monorepo where
+each documentation page covers one tool or component. Documentation is a flat directory
+with one file per component:
+
+- `documentation/<component-name>.md`
+
+The entire directory is mounted under `background/<repo-name>/` on the site.
 
 ## Getting Started
 
@@ -261,6 +303,7 @@ When adding new documentation, place it in the most appropriate section.
 
 [containers-repo]: https://gitlab.com/redhat/hummingbird/containers
 [rpms-repo]: https://gitlab.com/redhat/hummingbird/rpms
+[tools-repo]: https://gitlab.com/redhat/hummingbird/tools
 [k8s-test-pipeline-repo]: https://gitlab.com/redhat/hummingbird/pipelines/k8s-test-pipeline
 [docs-repo]: https://gitlab.com/redhat/hummingbird/documentation
 [internal-docs-repo]: https://gitlab.com/redhat/hummingbird/internal-documentation
