@@ -80,22 +80,22 @@ module:
       mounts:
         - {source: 'README.md', target: content/snippets/readme.md}
         - {source: 'CONTRIBUTING.md', target: content/snippets/contributing.md}
-        - {source: 'documentation/contributing', target: content/docs/contributing, includeFiles: "*.md"}
-        - {source: 'documentation/background', target: content/docs/background/containers, includeFiles: "*.md"}
-        - {source: 'documentation/ci-scripts', target: content/docs/background/containers/ci-scripts, includeFiles: "*.md"}
-        - {source: 'documentation/operating', target: content/docs/operating, includeFiles: "*.md"}
-        - {source: 'documentation/using', target: content/docs/using, includeFiles: "*.md"}
+        - {source: 'documentation/contributing', target: content/docs/contributing, files: "*.md"}
+        - {source: 'documentation/background', target: content/docs/background/containers, files: "*.md"}
+        - {source: 'documentation/ci-scripts', target: content/docs/background/containers/ci-scripts, files: "*.md"}
+        - {source: 'documentation/operating', target: content/docs/operating, files: "*.md"}
+        - {source: 'documentation/using', target: content/docs/using, files: "*.md"}
     - path: gitlab.com/redhat/hummingbird/rpms
       mounts:
         - {source: 'CONTRIBUTING.md', target: content/snippets/rpms-contributing.md}
-        - {source: 'documentation/background', target: content/docs/background/rpms, includeFiles: "*.md"}
-        - {source: 'documentation/operating', target: content/docs/operating, includeFiles: "*.md"}
+        - {source: 'documentation/background', target: content/docs/background/rpms, files: "*.md"}
+        - {source: 'documentation/operating', target: content/docs/operating, files: "*.md"}
     - path: gitlab.com/redhat/hummingbird/tools
       mounts:
-        - {source: 'documentation', target: content/docs/background/tools, includeFiles: "*.md"}
+        - {source: 'documentation', target: content/docs/background/tools, files: "*.md"}
     - path: gitlab.com/redhat/hummingbird/pipelines/k8s-test-pipeline
       mounts:
-        - {source: 'documentation', target: content/docs/background/k8s-test-pipeline, includeFiles: "*.md"}
+        - {source: 'documentation', target: content/docs/background/k8s-test-pipeline, files: "*.md"}
 ```
 
 For README.md and CONTRIBUTING.md, front matter is provided via wrapper files.

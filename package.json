@@ -3,5 +3,8 @@
     "autoprefixer": "*",
     "postcss": "*",
     "postcss-cli": "*"
-  }
+  },
+  "workspaces": [
+    "packages/hugoautogen"
+  ]
 }

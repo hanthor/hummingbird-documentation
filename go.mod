@@ -3,6 +3,5 @@ module gitlab.com/redhat/hummingbird/documentation
 go 1.19
 
 require (
-	github.com/google/docsy v0.12.0 // indirect
-	github.com/google/docsy/dependencies v0.7.2 // indirect
+	github.com/google/docsy/theme v0.16.0 // indirect
 )

@@ -72,6 +72,7 @@ serve:
 
 .PHONY: setup-host setup
 setup-host:
+	hugo mod npm pack
 	npm install --no-package-lock
 setup:
 	$(PODMAN_RUN) $(PODMAN_IMAGE) make setup-host

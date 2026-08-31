@@ -5,3 +5,4 @@
 /.hugo_cache/
 /node_modules/
 /package-lock.json
+/packages/hugoautogen/
