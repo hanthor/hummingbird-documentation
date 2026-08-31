@@ -53,8 +53,11 @@ Documentation content comes from six repositories:
    - `content/docs/operating/` - Infrastructure operation guides (Konflux, GitLab, etc.)
    - `content/docs/background/` - General architecture and concepts
 
-6. **[Internal documentation repository][internal-docs-repo]** -
-   Internal-only confidential content
+6. **[Infrastructure repository][infra-repo]** -
+   Internal-only documentation (cross-cutting layout):
+   - `documentation/operating/` - Internal operational docs (AWS, DNS, GitLab, etc.)
+   - `documentation/background/` - Internal background docs (error budgets, etc.)
+   - `documentation/presentations/` - Team presentations and talks
 
 ### How They Work Together
 
@@ -62,8 +65,10 @@ The repositories are layered using Hugo Modules:
 
 1. **Public documentation** imports specific directories from the containers, rpms, tools,
    and k8s-test-pipeline repositories
-2. **Internal documentation** imports the public documentation (which transitively includes
-   the imported repository documentation)
+2. **Internal documentation** is built from the infrastructure repository's `internal-docs/`
+   subtree. It imports the public documentation (which transitively includes the imported
+   repository documentation) and mounts the infrastructure repo's `documentation/` directory
+   as the Internal section
 
 **Hugo Module Mounts:**
 
@@ -136,8 +141,8 @@ make serve  # Available at http://localhost:1313/
 For the internal documentation:
 
 ```bash
-git clone https://gitlab.com/redhat/hummingbird/internal-documentation
-cd internal-documentation
+git clone https://gitlab.com/redhat/hummingbird/infrastructure
+cd infrastructure/internal-docs
 make serve  # Available at http://localhost:1314/
 ```
 
@@ -156,7 +161,7 @@ git clone https://gitlab.com/redhat/hummingbird/rpms
 git clone https://gitlab.com/redhat/hummingbird/tools
 git clone https://gitlab.com/redhat/hummingbird/pipelines/k8s-test-pipeline
 git clone https://gitlab.com/redhat/hummingbird/documentation
-git clone https://gitlab.com/redhat/hummingbird/internal-documentation
+git clone https://gitlab.com/redhat/hummingbird/infrastructure
 
 # Set up environment variables
 cat > .envrc << 'EOF'
@@ -165,6 +170,7 @@ export RPMS_REPO_PATH=$(pwd)/rpms
 export TOOLS_REPO_PATH=$(pwd)/tools
 export K8S_TEST_PIPELINE_REPO_PATH=$(pwd)/k8s-test-pipeline
 export DOCUMENTATION_REPO_PATH=$(pwd)/documentation
+export INFRASTRUCTURE_REPO_PATH=$(pwd)/infrastructure
 EOF
 direnv allow
 ```
@@ -297,7 +303,10 @@ The public documentation is organized into several main sections:
 
 The internal documentation adds:
 
-- **Internal** - Internal-only infrastructure, permissions, and team documentation
+- **Internal** - Internal-only infrastructure documentation, organized into:
+  - **Operating** - AWS, DNS, GitLab, OpenShift, and other service runbooks
+  - **Background** - Error budgets, SLIs/SLOs
+  - **Presentations** - Team talks and lightning talks
 
 When adding new documentation, place it in the most appropriate section.
 
@@ -306,5 +315,5 @@ When adding new documentation, place it in the most appropriate section.
 [tools-repo]: https://gitlab.com/redhat/hummingbird/tools
 [k8s-test-pipeline-repo]: https://gitlab.com/redhat/hummingbird/pipelines/k8s-test-pipeline
 [docs-repo]: https://gitlab.com/redhat/hummingbird/documentation
-[internal-docs-repo]: https://gitlab.com/redhat/hummingbird/internal-documentation
+[infra-repo]: https://gitlab.com/redhat/hummingbird/infrastructure
 [direnv]: https://direnv.net/
