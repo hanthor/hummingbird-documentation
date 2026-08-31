@@ -6,6 +6,12 @@ The rendered documentation is available at <https://hummingbird-project.io/>.
 
 ## Quick Start
 
+Install dependencies (only needed once per checkout):
+
+```bash
+make setup
+```
+
 Start the development server:
 
 ```bash
