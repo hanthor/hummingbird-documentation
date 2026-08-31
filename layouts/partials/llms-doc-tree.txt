@@ -1,0 +1,15 @@
+{{- $depth := .depth -}}
+{{- $indent := strings.Repeat $depth "  " -}}
+{{- range .pages -}}
+  {{- $url := .Permalink -}}
+  {{- with .OutputFormats.Get "markdown" -}}
+    {{- $url = .Permalink -}}
+  {{- end -}}
+  {{- $desc := .Description | strings.TrimSpace | replaceRE `\s+` " " -}}
+{{ $indent }}- [{{ .Title | strings.TrimSpace }}]({{ $url }})
+  {{- with $desc }}: {{ . }}{{ end }}
+  {{- "\n" -}}
+  {{- with .Pages -}}
+    {{- partial "llms-doc-tree.txt" (dict "pages" . "depth" (add $depth 1)) -}}
+  {{- end -}}
+{{- end -}}
