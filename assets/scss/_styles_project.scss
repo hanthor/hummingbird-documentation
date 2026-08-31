@@ -1,3 +1,5 @@
+@import 'td/code-dark';
+
 /* below md, the sidebar is in a hamburger menu */
 @include media-breakpoint-up(md) {
   .td-sidebar-nav {
