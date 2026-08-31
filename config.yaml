@@ -11,6 +11,11 @@ theme: [github.com/google/docsy/theme]
 
 disableKinds: [taxonomy]
 
+outputs:
+  home: [HTML, markdown, LLMS]
+  page: [HTML, markdown]
+  section: [HTML, RSS, print, markdown]
+
 module:
   imports:
     - path: gitlab.com/redhat/hummingbird/containers
