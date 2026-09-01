@@ -130,11 +130,12 @@ The entire directory is mounted under `background/<repo-name>/` on the site.
 
 ### Quick Start
 
-Clone and start the documentation server:
+Clone, install dependencies, and start the documentation server:
 
 ```bash
 git clone https://gitlab.com/redhat/hummingbird/documentation
 cd documentation
+make setup  # Installs npm dependencies; only needed once per checkout
 make serve  # Available at http://localhost:1313/
 ```
 
