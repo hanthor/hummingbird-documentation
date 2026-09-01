@@ -1,0 +1,35 @@
+{{- $maxSize := .site.Params.llms.max_page_size | default 50000 -}}
+{{- range .pages -}}
+  {{- $url := .Permalink -}}
+  {{- $mdURL := .Permalink -}}
+  {{- with .OutputFormats.Get "markdown" -}}
+    {{- $mdURL = .Permalink -}}
+  {{- end -}}
+  {{- $desc := .Description | strings.TrimSpace | replaceRE `\s+` " " -}}
+  {{- $content := .RenderShortcodes | strings.TrimSpace -}}
+  {{- $contentLen := len $content }}
+
+{{ strings.Repeat 80 "-" }}
+
+# {{ .Title | strings.TrimSpace }}
+
+url: {{ $url }}
+  {{- with $desc }}
+description: {{ . }}
+  {{- end }}
+
+  {{- if and (gt $contentLen 0) (le $contentLen $maxSize) }}
+
+{{ $content }}
+
+  {{- else if gt $contentLen $maxSize }}
+
+Content not included ({{ $contentLen }} characters, exceeds {{ $maxSize }} limit). Fetch the full page:
+{{ $mdURL }}
+
+  {{- end }}
+
+  {{- with .Pages }}
+    {{- partial "llms-full-doc-tree.txt" (dict "pages" . "site" $.site) -}}
+  {{- end -}}
+{{- end -}}
