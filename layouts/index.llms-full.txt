@@ -1,0 +1,14 @@
+{{- /* llms-full.txt: Full content dump of all documentation pages. */ -}}
+
+# {{ .Site.Title -}}
+
+{{ with .Description | strings.TrimSpace }}
+
+> {{ replace . "\n" "\n> " }}
+
+{{ end }}
+Compact index: [llms.txt]( {{- "llms.txt" | relURL -}} )
+
+{{ with .Site.GetPage "docs" -}}
+  {{ partial "llms-full-doc-tree.txt" (dict "pages" .Pages "site" $.Site) -}}
+{{ end -}}

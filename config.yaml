@@ -11,8 +11,22 @@ theme: [github.com/google/docsy/theme]
 
 disableKinds: [taxonomy]
 
+# Custom media type: text/plain HTML-encodes .RenderShortcodes output even
+# with isPlainText: true, while text/markdown produces a .md extension.
+# A custom type gives us .txt extension with clean markdown content.
+mediaTypes:
+  text/llmsfull:
+    suffixes: [txt]
+
+outputFormats:
+  llmsfull:
+    baseName: llms-full
+    mediaType: text/llmsfull
+    isPlainText: true
+    notAlternative: true
+
 outputs:
-  home: [HTML, markdown, LLMS]
+  home: [HTML, markdown, LLMS, llmsfull]
   page: [HTML, markdown]
   section: [HTML, RSS, print, markdown]
 
@@ -53,6 +67,8 @@ markup:
     noClasses: false
 
 params:
+  llms:
+    max_page_size: 50000
   companionHost: https://internal-documentation.hummingbird-project.io
   copyright: The Hummingbird Project Authors
   description: >-

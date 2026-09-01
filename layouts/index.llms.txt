@@ -16,6 +16,7 @@
 ## Site index
 
 - [Home page]( {{- $homeMarkdownURL -}} )
+- [Full content (llms-full.txt)]( {{- "llms-full.txt" | relURL -}} )
 {{ with .Site.GetPage "AGENTS.md" -}}
   {{ with .Permalink -}}
     {{ $url := . -}}

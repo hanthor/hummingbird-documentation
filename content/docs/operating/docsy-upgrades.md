@@ -19,9 +19,9 @@ import.
 
 ## Layout override inventory
 
-We override three Docsy templates to inject the companion page banner and
-sidebar lock icons. Each override is a copy of the upstream template with a
-small patch applied.
+We override four Docsy templates: three to inject the companion page banner and
+sidebar lock icons, and one to add `llms-full.txt` cross-linking. Each override
+is a copy of the upstream template with a small patch applied.
 
 ### `layouts/docs/_td-content.html`
 
@@ -55,6 +55,13 @@ branches), after the `{{ $s.LinkTitle }}` `</span>` and before `</a>`:
 {{- if isset $s.Params "companion" }}{{ if not $s.Params.companion }} <i class="fa-solid fa-lock companion-icon internal-only" title="Internal only"></i>{{ end }}{{ end -}}
 ```
 
+### `layouts/all.md`
+
+Overrides Docsy's `layouts/all.md` (the catch-all markdown output template).
+
+**Patch:** One line changed in the LLMS index section to add a link to
+`llms-full.txt` alongside the existing `llms.txt` link.
+
 ### Other overrides (no forward-porting needed)
 
 These files are fully custom and don't track an upstream template:
@@ -68,6 +75,10 @@ These files are fully custom and don't track an upstream template:
 | `layouts/partials/breadcrumb.html` | Custom breadcrumb with stable-URL display |
 | `layouts/partials/footer.html` | Fully custom 3-column footer |
 | `layouts/home.html` | Custom home page with cover image and feature cards |
+| `layouts/index.llms.txt` | Custom recursive llms.txt with full doc tree |
+| `layouts/index.llms-full.txt` | Full content dump for LLM consumption |
+| `layouts/partials/llms-doc-tree.txt` | Recursive tree-walking partial for llms.txt |
+| `layouts/partials/llms-full-doc-tree.txt` | Recursive content partial for llms-full.txt |
 
 ## Upgrade procedure
 
@@ -104,7 +115,7 @@ podman run --pull=never -it --rm -u 0 \
 
 ### 4. Forward-port layout overrides
 
-For each of the three tracked overrides:
+For each of the four tracked overrides:
 
 1. Find the new upstream template in the Hugo module cache:
 
@@ -112,6 +123,7 @@ For each of the three tracked overrides:
    find .hugo_cache -path "*docsy/theme@vX.Y.Z*" \
      -name "_td-content.html" -o \
      -name "sidebar-tree.html" -o \
+     -name "all.md" -o \
      \( -name "list.html" -path "*docs*" \)
    ```
 
@@ -159,7 +171,8 @@ After upgrading, verify:
 - [ ] Light/dark mode toggle works and all page elements adapt (navbar, sidebar,
   footer, code blocks)
 - [ ] Code blocks have dark background with readable syntax colors in dark mode
-- [ ] Agent-support outputs generate, if enabled (`.md` URL variants, `/llms.txt`)
+- [ ] Agent-support outputs generate, if enabled (`.md` URL variants,
+  `/llms.txt`, `/llms-full.txt`)
 - [ ] Stable URL aliases (`/l/...`) still resolve
 
 For the internal site, also build `infrastructure/internal-docs/` after
