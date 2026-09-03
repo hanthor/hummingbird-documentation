@@ -77,6 +77,19 @@ setup-host:
 setup:
 	$(PODMAN_RUN) $(PODMAN_IMAGE) make setup-host
 
+AGENT_IMAGE := quay.io/hummingbird-ci/hummingbird-agent:latest
+
+.PHONY: eval-docs
+eval-docs:
+	podman run --rm -u 0 \
+	  -v $$(pwd)/evals:/data:Z \
+	  -v $${HOME}/.config/gcloud/application_default_credentials.json:/tmp/adc.json:ro,z \
+	  -e GOOGLE_APPLICATION_CREDENTIALS=/tmp/adc.json \
+	  -e GOOGLE_CLOUD_PROJECT \
+	  $(AGENT_IMAGE) \
+	  python -m hummingbird_agent.evals.docs_eval.run_eval \
+	    -c /data/docs_eval.yml --results-dir /data/results
+
 .PHONY: clean
 clean:
 	rm -f go.sum > /dev/null

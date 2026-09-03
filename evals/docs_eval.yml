@@ -1,0 +1,64 @@
+---
+# Documentation quality evaluation configuration and golden dataset.
+#
+# Passed to the docs eval harness via:
+#   python -m hummingbird_agent.evals.docs_eval.run_eval -c evals/docs_eval.yml
+#
+# GCP project is resolved at runtime from GOOGLE_CLOUD_PROJECT env var
+# or Application Default Credentials (see VertexAuth).
+
+models:
+  - id: gemini-2.5-flash
+    region: global
+    google_search: true
+  - id: gemini-2.5-flash-lite
+    region: global
+    google_search: true
+  - id: claude-haiku-4-5
+    region: global
+    web_search: true
+
+judge:
+  model: gemini-2.5-pro
+  region: global
+
+max_iterations: 5
+repetitions: 3
+
+questions:
+  - id: pipeline-overview
+    question: >-
+      What is the pipeline structure from CVE to container image
+      for Project Hummingbird images?
+    category: pipeline-architecture
+    facts:
+      - question: >-
+          Does the response mention a CVE analysis or vulnerability
+          monitoring tool?
+        weight: 1
+      - question: >-
+          Does the response mention that RPMs are built and published
+          to a repository?
+        weight: 1
+      - question: >-
+          Does the response identify lockfile updates as the mechanism
+          connecting RPM publishing to container image rebuilds?
+        weight: 2
+      - question: >-
+          Does the response state or imply that lockfile updates run on
+          a schedule rather than being triggered by events?
+        weight: 1.5
+      - question: >-
+          Does the response mention that container images are released
+          to Quay.io or a container registry?
+        weight: 1
+      - question: >-
+          Does the response mention advisory creation or VEX publication
+          as part of the process?
+        weight: 0.5
+    coherence: >-
+      Does the response describe a coherent end-to-end pipeline showing
+      how a CVE leads to an updated container image, rather than listing
+      disconnected facts?
+    coherence_weight: 1.5
+    threshold: 0.4
