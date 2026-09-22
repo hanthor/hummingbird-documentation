@@ -43,7 +43,7 @@
             <i class="{{ .icon }}"></i>
           </div>
           <h4 class="h3">{{ .title }}</h4>
-          <p><a class="stretched-link" href="{{ ref $global .url }}">{{ .url_text }} …</a></p>
+          <p><a class="stretched-link" href="{{ if findRE `^https?://` .url }}{{ .url }}{{ else }}{{ ref $global .url }}{{ end }}">{{ .url_text }} …</a></p>
         </div>
       {{ end }}
     </div>
