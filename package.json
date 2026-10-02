@@ -2,7 +2,8 @@
   "devDependencies": {
     "autoprefixer": "*",
     "postcss": "*",
-    "postcss-cli": "*"
+    "postcss-cli": "*",
+    "sass-embedded": "*"
   },
   "workspaces": [
     "packages/hugoautogen"
