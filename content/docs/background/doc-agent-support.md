@@ -63,6 +63,20 @@ GET /docs/contributing/quickstart/ HTTP/1.1
 Accept: text/markdown
 ```
 
+### Stable link aliases (`/l/`)
+
+Pages referenced from external sources have stable short URLs under the `/l/`
+prefix (e.g., `/l/adding-images`). These return HTTP 301 to the canonical page
+URL, so pages can move without breaking incoming links. The
+[Writing Documentation][writing-docs] guide describes how to add aliases.
+
+The CloudFront viewer-request function recognizes `/l/` paths and normalizes
+them before they reach the origin. Content negotiation (`Accept` header) is
+skipped for `/l/` paths — instead, the URL form determines the response:
+`/l/foo` and `/l/foo/` redirect to the HTML page, while `/l/foo.md` and
+`/l/foo/index.md` redirect to the markdown file. If no matching alias exists,
+the origin returns a 404.
+
 ## Specifications and tools
 
 The site aims to follow the emerging standards for agent-friendly documentation:
@@ -94,3 +108,4 @@ improvement for agent consumption.
 [afdocs-spec]: https://agentdocsspec.com/
 [afdocs-tool]: https://afdocs.dev/
 [promptfoo]: https://github.com/promptfoo/promptfoo
+[writing-docs]: https://hummingbird-project.io/l/writing-documentation
