@@ -102,8 +102,8 @@ LLMs can answer questions about Hummingbird using the published documentation.
 This provides a feedback loop for identifying documentation pages that need
 improvement for agent consumption.
 
-[llms-txt]: /llms.txt
-[llms-full-txt]: /llms-full.txt
+[llms-txt]: https://hummingbird-project.io/llms.txt
+[llms-full-txt]: https://hummingbird-project.io/llms-full.txt
 [llmstxt-spec]: https://llmstxt.org/
 [afdocs-spec]: https://agentdocsspec.com/
 [afdocs-tool]: https://afdocs.dev/
