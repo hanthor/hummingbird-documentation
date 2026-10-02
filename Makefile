@@ -5,39 +5,35 @@ PODMAN_ADDITIONAL_ARGS :=
 HUGO_MODULE_REPLACEMENTS :=
 
 ifdef CONTAINERS_REPO_PATH
-	ifdef RUNNING_IN_CONTAINER
-		HUGO_MODULE_REPLACEMENTS += gitlab.com/redhat/hummingbird/containers->/containers
-	else
-		PODMAN_ADDITIONAL_ARGS += -v $(CONTAINERS_REPO_PATH):/containers:z -e CONTAINERS_REPO_PATH=$(CONTAINERS_REPO_PATH)
-		HUGO_MODULE_REPLACEMENTS += gitlab.com/redhat/hummingbird/containers->$(basename $(CONTAINERS_REPO_PATH))
+	CONTAINERS_REPO_ABSPATH := $(abspath $(CONTAINERS_REPO_PATH))
+	ifndef RUNNING_IN_CONTAINER
+		PODMAN_ADDITIONAL_ARGS += -v $(CONTAINERS_REPO_ABSPATH):$(CONTAINERS_REPO_ABSPATH):z -e CONTAINERS_REPO_PATH=$(CONTAINERS_REPO_ABSPATH)
 	endif
+	HUGO_MODULE_REPLACEMENTS += gitlab.com/redhat/hummingbird/containers->$(CONTAINERS_REPO_ABSPATH)
 endif
 
 ifdef RPMS_REPO_PATH
-	ifdef RUNNING_IN_CONTAINER
-		HUGO_MODULE_REPLACEMENTS += gitlab.com/redhat/hummingbird/rpms->/rpms
-	else
-		PODMAN_ADDITIONAL_ARGS += -v $(RPMS_REPO_PATH):/rpms:z -e RPMS_REPO_PATH=$(RPMS_REPO_PATH)
-		HUGO_MODULE_REPLACEMENTS += gitlab.com/redhat/hummingbird/rpms->$(basename $(RPMS_REPO_PATH))
+	RPMS_REPO_ABSPATH := $(abspath $(RPMS_REPO_PATH))
+	ifndef RUNNING_IN_CONTAINER
+		PODMAN_ADDITIONAL_ARGS += -v $(RPMS_REPO_ABSPATH):$(RPMS_REPO_ABSPATH):z -e RPMS_REPO_PATH=$(RPMS_REPO_ABSPATH)
 	endif
+	HUGO_MODULE_REPLACEMENTS += gitlab.com/redhat/hummingbird/rpms->$(RPMS_REPO_ABSPATH)
 endif
 
 ifdef TOOLS_REPO_PATH
-	ifdef RUNNING_IN_CONTAINER
-		HUGO_MODULE_REPLACEMENTS += gitlab.com/redhat/hummingbird/tools->/tools
-	else
-		PODMAN_ADDITIONAL_ARGS += -v $(TOOLS_REPO_PATH):/tools:z -e TOOLS_REPO_PATH=$(TOOLS_REPO_PATH)
-		HUGO_MODULE_REPLACEMENTS += gitlab.com/redhat/hummingbird/tools->$(basename $(TOOLS_REPO_PATH))
+	TOOLS_REPO_ABSPATH := $(abspath $(TOOLS_REPO_PATH))
+	ifndef RUNNING_IN_CONTAINER
+		PODMAN_ADDITIONAL_ARGS += -v $(TOOLS_REPO_ABSPATH):$(TOOLS_REPO_ABSPATH):z -e TOOLS_REPO_PATH=$(TOOLS_REPO_ABSPATH)
 	endif
+	HUGO_MODULE_REPLACEMENTS += gitlab.com/redhat/hummingbird/tools->$(TOOLS_REPO_ABSPATH)
 endif
 
 ifdef K8S_TEST_PIPELINE_REPO_PATH
-	ifdef RUNNING_IN_CONTAINER
-		HUGO_MODULE_REPLACEMENTS += gitlab.com/redhat/hummingbird/pipelines/k8s-test-pipeline->/k8s-test-pipeline
-	else
-		PODMAN_ADDITIONAL_ARGS += -v $(K8S_TEST_PIPELINE_REPO_PATH):/k8s-test-pipeline:z -e K8S_TEST_PIPELINE_REPO_PATH=$(K8S_TEST_PIPELINE_REPO_PATH)
-		HUGO_MODULE_REPLACEMENTS += gitlab.com/redhat/hummingbird/pipelines/k8s-test-pipeline->$(basename $(K8S_TEST_PIPELINE_REPO_PATH))
+	K8S_TEST_PIPELINE_REPO_ABSPATH := $(abspath $(K8S_TEST_PIPELINE_REPO_PATH))
+	ifndef RUNNING_IN_CONTAINER
+		PODMAN_ADDITIONAL_ARGS += -v $(K8S_TEST_PIPELINE_REPO_ABSPATH):$(K8S_TEST_PIPELINE_REPO_ABSPATH):z -e K8S_TEST_PIPELINE_REPO_PATH=$(K8S_TEST_PIPELINE_REPO_ABSPATH)
 	endif
+	HUGO_MODULE_REPLACEMENTS += gitlab.com/redhat/hummingbird/pipelines/k8s-test-pipeline->$(K8S_TEST_PIPELINE_REPO_ABSPATH)
 endif
 
 ifneq ($(HUGO_MODULE_REPLACEMENTS),)
@@ -46,7 +42,7 @@ endif
 
 PULL ?= newer
 PODMAN_IMAGE := quay.io/hummingbird-ci/gitlab-ci:latest
-PODMAN_RUN := podman run --pull=$(PULL) -it --rm -u 0 -v $(PWD):/src:z -w /src -e RUNNING_IN_CONTAINER=1 -e HUGO_CACHEDIR=/src/.hugo_cache $(PODMAN_ADDITIONAL_ARGS)
+PODMAN_RUN := podman run --pull=$(PULL) -it --rm -u 0 -v $(PWD):$(PWD):z -w $(PWD) -e RUNNING_IN_CONTAINER=1 -e HUGO_CACHEDIR=$(PWD)/.hugo_cache $(PODMAN_ADDITIONAL_ARGS)
 
 .PHONY: container
 container:
@@ -64,9 +60,11 @@ check:
 # finds the `sass` binary regardless of architecture.
 export PATH := $(abspath $(wildcard node_modules/sass-embedded-*/dart-sass)):$(PATH)
 
-.PHONY: build-host build
+.PHONY: build-host build build-mr-host
 build-host:
 	hugo -d public
+build-mr-host:
+	hugo -d public_mr
 build:
 	$(PODMAN_RUN) $(PODMAN_IMAGE) make build-host
 
