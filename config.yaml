@@ -4,6 +4,7 @@ baseURL: https://hummingbird-project.io
 title: Project Hummingbird
 
 enableRobotsTXT: true
+disableAliases: true
 
 # Hugo allows theme composition (and inheritance). The precedence is from left
 # to right.
@@ -17,6 +18,8 @@ disableKinds: [taxonomy]
 mediaTypes:
   text/llmsfull:
     suffixes: [txt]
+  text/redirects:
+    delimiter: ''
 
 outputFormats:
   llmsfull:
@@ -24,9 +27,15 @@ outputFormats:
     mediaType: text/llmsfull
     isPlainText: true
     notAlternative: true
+  redirects:
+    baseName: _redirects
+    mediaType: text/redirects
+    isPlainText: true
+    notAlternative: true
+    root: true
 
 outputs:
-  home: [HTML, markdown, LLMS, llmsfull]
+  home: [HTML, markdown, LLMS, llmsfull, redirects]
   page: [HTML, markdown]
   section: [HTML, RSS, print, markdown]
 

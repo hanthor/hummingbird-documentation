@@ -1,0 +1,16 @@
+{{- /* Generate a GitLab Pages _redirects file from Hugo aliases.
+       Requires disableAliases: true in config.yaml so that Hugo does not
+       also generate static HTML redirect pages (which would shadow these
+       rules on GitLab Pages).
+
+       Alias paths in frontmatter are absolute (e.g. /l/foo) and do not
+       include the site's path prefix. When baseURL has a subpath (e.g.
+       /mr-40 for MR preview builds), prepend it so both sides of the
+       redirect rule share the same prefix. */ -}}
+{{- $prefix := urls.Parse (site.BaseURL | strings.TrimSuffix "/") -}}
+{{- range .Site.Pages -}}
+  {{- $dest := .RelPermalink -}}
+  {{- range .Aliases -}}
+{{ $prefix.Path }}{{ . }}  {{ $dest }}  301
+{{ end -}}
+{{- end -}}
