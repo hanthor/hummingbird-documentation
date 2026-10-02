@@ -58,6 +58,12 @@ check-host:
 check:
 	$(PODMAN_RUN) $(PODMAN_IMAGE) make check-host
 
+# Dart Sass (required by Docsy ≥ v0.17.0). sass-embedded installs the native
+# binary in a platform-specific package (sass-embedded-<os>-<arch>) under
+# dart-sass/. Prepend that directory to PATH so Hugo's dartsass transpiler
+# finds the `sass` binary regardless of architecture.
+export PATH := $(abspath $(wildcard node_modules/sass-embedded-*/dart-sass)):$(PATH)
+
 .PHONY: build-host build
 build-host:
 	hugo -d public
