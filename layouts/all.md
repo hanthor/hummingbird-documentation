@@ -41,7 +41,9 @@ LLMS index: [ {{- $llmsTxt -}} ]( {{- $llmsTxt | relURL -}} ) | Full content: [ 
 
 {{/* Page content ------------------------------------------------------ */ -}}
 
-{{ with .RenderShortcodes | strings.TrimSpace -}}
+{{ $pageContent := .RenderShortcodes | strings.TrimSpace -}}
+{{ $pageContent = partial "resolve-md-links.txt" (dict "page" . "content" $pageContent) -}}
+{{ with $pageContent -}}
 {{ if $needSeparator }}
 ---
 
