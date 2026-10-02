@@ -46,6 +46,23 @@ repositories) while preserving the content as markdown rather than converting
 to HTML. Each markdown page includes links to both `llms.txt` and
 `llms-full.txt` so agents can discover the site-wide indexes from any page.
 
+### Content negotiation
+
+A CloudFront distribution sits between DNS and the site's page host. A
+viewer-request CloudFront Function inspects the `Accept` header on every
+request: when the header includes `text/markdown`, the function rewrites the
+URI to serve the pre-built `.md` equivalent. Only HTML-like patterns (trailing
+slash, `.html`, bare paths) are rewritten; all other URIs pass through
+unchanged.
+
+This means agents can use standard HTTP content negotiation on any page URL
+without needing to know the `/index.md` convention:
+
+```http
+GET /docs/contributing/quickstart/ HTTP/1.1
+Accept: text/markdown
+```
+
 ## Specifications and tools
 
 The site aims to follow the emerging standards for agent-friendly documentation:
@@ -57,13 +74,6 @@ The site aims to follow the emerging standards for agent-friendly documentation:
   with the Agent-Friendly Documentation Spec
 
 ## Planned features
-
-### Content negotiation (HUM-6570)
-
-A CloudFront content-negotiation layer will allow agents to request
-`text/markdown` via the HTTP `Accept` header and receive the markdown variant
-without knowing the `/index.md` URL convention. This is a requirement of the
-Agent-Friendly Documentation Spec.
 
 ### HTML llms-directive (HUM-6571)
 
