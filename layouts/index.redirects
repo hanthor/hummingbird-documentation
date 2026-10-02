@@ -11,6 +11,6 @@
 {{- range .Site.Pages -}}
   {{- $dest := .RelPermalink -}}
   {{- range .Aliases -}}
-{{ $prefix.Path }}{{ . }}  {{ $dest }}  301
+{{ $prefix.Path }}{{ . }}/*  {{ $dest }}:splat  301
 {{ end -}}
 {{- end -}}
