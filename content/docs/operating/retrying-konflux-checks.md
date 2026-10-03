@@ -42,7 +42,7 @@ You can also manually retrigger specific checks using slash commands in merge re
 /retest gitlab-ci--default--main-on-pull-request
 ```
 
-To retrigger a specific pipeline run as listed in [.tekton/images-on-pull-request.yaml](.tekton/images-on-pull-request.yaml).
+To retrigger a specific pipeline run as listed in [.tekton/images-on-pull-request.yaml](https://gitlab.com/redhat/hummingbird/containers/-/blob/main/.tekton/images-on-pull-request.yaml).
 
 See the [Tekton Pipelines as Code documentation][pac-commands] for more details on available commands.
 

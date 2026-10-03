@@ -6,7 +6,8 @@
     {{- $mdURL = .Permalink -}}
   {{- end -}}
   {{- $desc := .Description | strings.TrimSpace | replaceRE `\s+` " " -}}
-  {{- $content := .RenderShortcodes | strings.TrimSpace -}}
+  {{- $rawContent := .RenderShortcodes | strings.TrimSpace -}}
+  {{- $content := partial "resolve-md-links.txt" (dict "page" . "content" $rawContent) -}}
   {{- $contentLen := len $content }}
 
 {{ strings.Repeat 80 "-" }}

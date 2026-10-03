@@ -1,0 +1,120 @@
+{{/*
+
+Resolve path-relative .md links in RenderShortcodes output to absolute Permalinks.
+
+Context: Hugo serves every page at <slug>/index.md, not <slug>.md. Source files use
+relative .md links (e.g. testing-images.md) that work correctly in the source repo but
+produce 404s in the markdown output because .RenderShortcodes does not invoke render
+hooks. This partial post-processes the raw content to replace each resolvable .md link
+destination with the page's Permalink.
+
+Algorithm:
+  1. findRE extracts every .md link destination from the content — both inline
+     (](foo.md)) and reference-definition (]: foo.md) forms, with or without anchors.
+  2. For each unique path, strip any #anchor suffix, call .GetPage, and if a page is
+     found, build a Permalink+anchor replacement. .GetPage resolves bare basenames
+     relative to the current page's section and ../ paths by traversing the content
+     directory — the same logic the HTML render-link.html hook uses.
+  3. Apply one replaceRE per resolved entry, rewriting both link syntax forms.
+
+Parameters (dict):
+  "page"    — the Hugo page being rendered (.GetPage is called on it)
+  "content" — the raw .RenderShortcodes output to process
+
+Returns the rewritten content string.
+
+*/}}
+
+{{- $page := .page -}}
+{{- $content := .content -}}
+
+{{/*
+  Extract all .md link destinations. Two patterns, one per link syntax:
+
+  Inline:    ](path.md)  or  ](path.md#anchor)
+  Ref-def:   ]: path.md  or  ]: path.md#anchor
+
+  findRE returns the full match; we strip surrounding delimiters below.
+
+  The inline pattern matches ]( followed by any non-empty path that:
+    - does not start with / (root-relative links are already correct)
+    - does not contain spaces (not valid in unquoted link destinations)
+    - ends with .md followed by optional #anchor and )
+    - stops at ) " or # to avoid swallowing optional title attributes
+
+  Paths starting with http/https are excluded after extraction (see range below)
+  since RE2 has no negative lookahead and http/https links are already absolute.
+
+  The ref-def pattern matches ]: followed by a path not starting with /.
+*/}}
+
+{{- $inlineMatches := findRE `\]\([^/) ][^)"#]*\.md[^)"]*\)` $content -}}
+{{- $refMatches    := findRE `\]: *[^/ \n][^ \n#]*\.md[#\n]?` $content -}}
+
+{{/*
+  Build a deduplicated set of raw paths (with anchors) extracted from the matches.
+  Strip the surrounding delimiters but keep the #anchor for use in the replacement URL.
+*/}}
+
+{{- $rawPaths := slice -}}
+
+{{- range $inlineMatches -}}
+  {{- /* Strip leading ]( and trailing ) */ -}}
+  {{- $path := . | strings.TrimPrefix "](" | strings.TrimSuffix ")" -}}
+  {{- if not (in $rawPaths $path) -}}
+    {{- $rawPaths = $rawPaths | append $path -}}
+  {{- end -}}
+{{- end -}}
+
+{{- range $refMatches -}}
+  {{- /* Strip leading ]: (with optional spaces) and trailing newline or # */ -}}
+  {{- $path := . | strings.TrimPrefix "]: " | strings.TrimRight "\n" -}}
+  {{- /* replaceRE to remove the leading ]: with any number of spaces */ -}}
+  {{- $path = $path | replaceRE `^\]: *` "" -}}
+  {{- /* Trim trailing newline char that findRE may capture */ -}}
+  {{- $path = strings.TrimRight "\n" $path -}}
+  {{- if not (in $rawPaths $path) -}}
+    {{- $rawPaths = $rawPaths | append $path -}}
+  {{- end -}}
+{{- end -}}
+
+{{/*
+  For each unique raw path, resolve via .GetPage and build the replacement map.
+  Key: raw path (with anchor). Value: absolute Permalink + anchor.
+*/}}
+
+{{- range $rawPaths -}}
+  {{- $rawPath := . -}}
+
+  {{- /* Skip absolute URLs — they are already correct */ -}}
+  {{- if strings.HasPrefix $rawPath "http" -}}{{- continue -}}{{- end -}}
+
+  {{- /* Separate path from anchor */ -}}
+  {{- $anchor := "" -}}
+  {{- $filePath := $rawPath -}}
+  {{- if strings.Contains $rawPath "#" -}}
+    {{- $parts := split $rawPath "#" -}}
+    {{- $filePath = index $parts 0 -}}
+    {{- $anchor = printf "#%s" (index $parts 1) -}}
+  {{- end -}}
+
+  {{- /* .GetPage resolves bare basenames relative to the current page's section
+       and ../ prefixed paths by traversing the content directory, matching the
+       HTML render-link.html hook logic. */ -}}
+  {{- with $page.GetPage $filePath -}}
+    {{- $permalink := .Permalink -}}
+
+    {{- /* Rewrite inline link form: ](path.md)  →  ](https://...) */ -}}
+    {{- $inlineOld := printf `](%s)` $rawPath -}}
+    {{- $inlineNew := printf `](%s%s)` $permalink $anchor -}}
+    {{- $content = replace $content $inlineOld $inlineNew -}}
+
+    {{- /* Rewrite reference-definition form: ]: path.md  →  ]: https://... */ -}}
+    {{- $refOld := printf `]: %s` $rawPath -}}
+    {{- $refNew := printf `]: %s%s` $permalink $anchor -}}
+    {{- $content = replace $content $refOld $refNew -}}
+
+  {{- end -}}
+{{- end -}}
+
+{{- $content -}}

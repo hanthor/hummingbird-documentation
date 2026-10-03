@@ -35,13 +35,15 @@ Override of Docsy's all.md: adds llms-full.txt link alongside llms.txt.
 
 {{ $llmsTxt := "llms.txt" -}}
 {{ $llmsFullTxt := "llms-full.txt" -}}
-LLMS index: [ {{- $llmsTxt -}} ]( {{- $llmsTxt | relURL -}} ) | Full content: [ {{- $llmsFullTxt -}} ]( {{- $llmsFullTxt | relURL -}} )
+LLMS index: [ {{- $llmsTxt -}} ]( {{- $llmsTxt | absURL -}} ) | Full content: [ {{- $llmsFullTxt -}} ]( {{- $llmsFullTxt | absURL -}} )
 {{ $needSeparator = true -}}
 {{ end -}}
 
 {{/* Page content ------------------------------------------------------ */ -}}
 
-{{ with .RenderShortcodes | strings.TrimSpace -}}
+{{ $pageContent := .RenderShortcodes | strings.TrimSpace -}}
+{{ $pageContent = partial "resolve-md-links.txt" (dict "page" . "content" $pageContent) -}}
+{{ with $pageContent -}}
 {{ if $needSeparator }}
 ---
 
@@ -65,7 +67,7 @@ LLMS index: [ {{- $llmsTxt -}} ]( {{- $llmsTxt | relURL -}} ) | Full content: [ 
 Section pages:
 
 {{ range . -}}
-- [ {{- .Title | strings.TrimSpace -}} ]( {{- .RelPermalink -}} )
+- [ {{- .Title | strings.TrimSpace -}} ]( {{- .Permalink -}} )
   {{- with .Description | strings.TrimSpace -}}
   : {{ . -}}
   {{ end }}
