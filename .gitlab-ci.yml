@@ -32,6 +32,7 @@ stages:
 default:
   tags: [hum-1cpu-128m]
   image: quay.io/hummingbird-ci/gitlab-ci:latest
+
   retry:
     max: 2
     when:
@@ -59,7 +60,7 @@ check:
     - !reference [.rules, mr]
 
 check-afdocs:
-  tags: [big-runner]
+  tags: [hum-1cpu-1gi]
   script:
     - make setup-host
     - make check-afdocs-host
