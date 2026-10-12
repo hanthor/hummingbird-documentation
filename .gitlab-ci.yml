@@ -58,6 +58,14 @@ check:
   rules:
     - !reference [.rules, mr]
 
+check-afdocs:
+  tags: [big-runner]
+  script:
+    - make setup-host
+    - make check-afdocs-host
+  rules:
+    - !reference [.rules, mr]
+
 build:
   tags: [hum-1cpu-512m]
   script:

@@ -60,12 +60,13 @@ AFDOCS_CHECKS := llms-txt-exists,llms-txt-valid,llms-txt-size,llms-txt-links-res
 check-afdocs-host:
 	trap 'kill %1 2>/dev/null' EXIT; \
 	hugo serve --bind 0.0.0.0 & \
-	sleep 8; \
-	npx afdocs check http://localhost:1313 \
+	for i in $$(seq 1 60); do curl -sf http://localhost:1313 >/dev/null 2>&1 && break; sleep 1; done; \
+	npx --yes afdocs check http://localhost:1313 \
 	  --canonical-origin https://hummingbird-project.io \
 	  --checks $(AFDOCS_CHECKS) \
 	  --llms-txt-url http://localhost:1313/llms.txt \
-	  --max-links 200
+	  --max-links 200 \
+	  --verbose
 check-afdocs:
 	$(PODMAN_RUN) -p 1313:1313 $(PODMAN_IMAGE) make check-afdocs-host
 
