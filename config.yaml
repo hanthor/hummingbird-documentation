@@ -76,8 +76,6 @@ markup:
     noClasses: false
 
 params:
-  llms:
-    max_page_size: 50000
   companionHost: https://internal-documentation.hummingbird-project.io
   copyright: The Hummingbird Project Authors
   description: >-
