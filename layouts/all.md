@@ -54,8 +54,9 @@ LLMS index: [ {{- $llmsTxt -}} ]( {{- $llmsTxt | absURL -}} ) | Full content: [ 
 {{ $needSeparator = true -}}
 {{ end -}}
 
-{{/* Section index, if any --------------------------------------------- */ -}}
+{{/* Section index, if any — skip when no_list is set in frontmatter ---- */ -}}
 
+{{ if not .Params.no_list -}}
 {{ with .Pages -}}
 
 {{ if $needSeparator }}
@@ -73,4 +74,5 @@ Section pages:
   {{ end }}
 {{ end -}}
 
+{{ end -}}
 {{ end -}}
