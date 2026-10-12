@@ -54,6 +54,21 @@ check-host:
 check:
 	$(PODMAN_RUN) $(PODMAN_IMAGE) make check-host
 
+AFDOCS_CHECKS := llms-txt-exists,llms-txt-valid,llms-txt-size,llms-txt-links-resolve,llms-txt-links-markdown,llms-txt-directive-html,llms-txt-directive-md,markdown-url-support,rendering-strategy,page-size-markdown,page-size-html,page-size-transfer,content-start-position,single-fetch-completeness,tabbed-content-serialization,section-header-quality,markdown-code-fence-validity,markdown-link-portability,embedded-data-serialization,http-status-codes,redirect-behavior,llms-txt-coverage,markdown-content-parity
+
+.PHONY: check-afdocs-host check-afdocs
+check-afdocs-host:
+	trap 'kill %1 2>/dev/null' EXIT; \
+	hugo serve --bind 0.0.0.0 & \
+	sleep 8; \
+	npx afdocs check http://localhost:1313 \
+	  --canonical-origin https://hummingbird-project.io \
+	  --checks $(AFDOCS_CHECKS) \
+	  --llms-txt-url http://localhost:1313/llms.txt \
+	  --max-links 200
+check-afdocs:
+	$(PODMAN_RUN) -p 1313:1313 $(PODMAN_IMAGE) make check-afdocs-host
+
 # Dart Sass (required by Docsy ≥ v0.17.0). sass-embedded installs the native
 # binary in a platform-specific package (sass-embedded-<os>-<arch>) under
 # dart-sass/. Prepend that directory to PATH so Hugo's dartsass transpiler
