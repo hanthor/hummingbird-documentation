@@ -82,6 +82,6 @@ adding or editing questions:
   where current documentation should fail but improved documentation
   should pass.
 
-[docs-eval-ref]: https://internal-documentation.hummingbird-project.io/docs/internal/hummingbird-agent-docs-eval/
-[evals-docs]: https://internal-documentation.hummingbird-project.io/docs/internal/hummingbird-agent-evals/
+[docs-eval-ref]: https://hummingbird-project.io/l/agent-docs-eval
+[evals-docs]: https://hummingbird-project.io/l/agent-evals
 [agent-pkg]: https://gitlab.com/redhat/hummingbird/tools/-/tree/main/hummingbird-agent
