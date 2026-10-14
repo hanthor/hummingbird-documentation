@@ -2,8 +2,13 @@
 {{- $isRemote := strings.HasPrefix $link "http" -}}
 {{- $isInternalLink := false -}}
 {{- if $isRemote -}}
-  {{- /* Handle absolute hummingbird-project.io links */ -}}
-  {{- if strings.HasPrefix $link "https://hummingbird-project.io" -}}
+  {{- /* Handle absolute links to this site or the public docs host (resolve at build time).
+       The public host is hardcoded because every site imports the public docs module,
+       so those pages always exist locally. The dynamic baseURL check handles the
+       internal site resolving its own internal-documentation.… links. */ -}}
+  {{- $baseHost := printf "https://%s" (urls.Parse site.BaseURL).Host -}}
+  {{- $isHummingbirdLink := or (strings.HasPrefix $link $baseHost) (strings.HasPrefix $link "https://hummingbird-project.io") -}}
+  {{- if $isHummingbirdLink -}}
     {{- $isInternalLink = true -}}
     {{- $url := urls.Parse .Destination -}}
     {{- $fragment := "" -}}
