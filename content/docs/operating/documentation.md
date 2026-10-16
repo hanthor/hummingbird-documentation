@@ -196,6 +196,18 @@ Check for problems:
 make check  # Runs linters and validation
 ```
 
+After `make setup`, run the Docsy print-layout regression tests:
+
+```bash
+make test
+```
+
+These tests build a small site with Mermaid diagrams in section and child pages.
+They check renderer inclusion in normal and combined print views, including nested
+sections and `no_print` exclusions. After changing print rendering, also check a
+diagram page and its "Print entire section" view in a browser, then export a PDF
+and confirm that the diagrams remain visible.
+
 ## Link Format
 
 Documentation uses two types of internal links depending on the context:
