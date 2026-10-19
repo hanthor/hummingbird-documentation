@@ -1,0 +1,8 @@
+{{ define "main" -}}
+  {{- $content := partial "print/render" . -}}
+  {{ $content }}
+  {{/* Docsy only checks this section's flag, not flags on printed child pages. */}}
+  {{- if and (not (.Page.Store.Get "hasmermaid")) (strings.Contains $content `<pre class="mermaid">`) -}}
+    {{- partial "scripts/mermaid.html" . -}}
+  {{- end -}}
+{{- end }}

@@ -70,6 +70,12 @@ check-afdocs-host:
 check-afdocs:
 	$(PODMAN_RUN) -p 1313:1313 $(PODMAN_IMAGE) make check-afdocs-host
 
+.PHONY: test-host test
+test-host:
+	PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests -v
+test:
+	$(PODMAN_RUN) $(PODMAN_IMAGE) make test-host
+
 # Dart Sass (required by Docsy ≥ v0.17.0). sass-embedded installs the native
 # binary in a platform-specific package (sass-embedded-<os>-<arch>) under
 # dart-sass/. Prepend that directory to PATH so Hugo's dartsass transpiler
