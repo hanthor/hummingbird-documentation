@@ -65,8 +65,11 @@ module:
 # Image processing configuration.
 imaging:
   resampleFilter: CatmullRom
-  quality: 75
   anchor: smart
+  jpeg:
+    quality: 75
+  webp:
+    quality: 75
 
 markup:
   goldmark:
