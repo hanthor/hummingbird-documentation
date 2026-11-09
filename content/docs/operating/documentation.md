@@ -305,6 +305,29 @@ Add `/l/` aliases to pages that:
 7. Push to your fork
 8. Create a merge request against the main repository
 
+## Source Repository Checks
+
+Merge requests that change mounted documentation are checked in the source
+repository's own pipeline. The containers, rpms, tools, and
+pipelines/k8s-test-pipeline repositories each have a `check-afdocs` job that
+builds this site with the merge request's working tree mounted in place of the
+published module, then runs the same agent-friendly docs (afdocs) suite the
+documentation repository runs on its own merge requests.
+
+- The job runs automatically when a merge request changes a path the site
+  mounts, and is available as an optional manual job otherwise.
+- A failure means the rendered site would break. Fix it in the source
+  repository — a broken link or oversized page is a content problem there, not
+  a build problem here.
+- Like a production build, the check resolves the other repositories'
+  documentation at their default branches, so a failure can also come from
+  another repository's `main`. Re-run the job once that repository is fixed.
+
+```bash
+# Run the same check locally from a documentation checkout:
+make check-afdocs TOOLS_REPO_PATH=/path/to/tools
+```
+
 ## Documentation Structure
 
 The public documentation is organized into several main sections:
