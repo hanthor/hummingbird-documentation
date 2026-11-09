@@ -61,26 +61,17 @@ class RenderLinkTests(unittest.TestCase):
 
         # Content
         pages = {
-            "docs/_index.md": (
-                "---\ntitle: Docs\n---\n"
-            ),
+            "docs/_index.md": "---\ntitle: Docs\n---\n",
             "docs/talk/_index.md": (
                 "---\ntitle: Talk\n---\n"
-                # static .html link — must NOT be rewritten to /docs/talk/slides/
-                "[Slides](https://docs.example.com/docs/talk/slides.html)\n"
-                # relative .md link — must resolve to /docs/talk/other/
-                "[Notes](other.md)\n"
-                # absolute own-host .md link — must resolve to /docs/talk/other/
-                "[Public notes](https://hummingbird-project.io/docs/talk/other.md)\n"
-                # external link — must keep target=_blank
-                "[External](https://example.org/page.html)\n"
+                "[static html](https://docs.example.com/docs/talk/slides.html)\n"
+                "[relative md](other.md#relative)\n"
+                "[absolute own-host md]"
+                "(https://hummingbird-project.io/docs/talk/other.md#absolute)\n"
+                "[external](https://example.org/page.html)\n"
             ),
-            "docs/talk/slides.md": (
-                "---\ntitle: Slides\n---\nSlide content.\n"
-            ),
-            "docs/talk/other.md": (
-                "---\ntitle: Other\n---\nOther content.\n"
-            ),
+            "docs/talk/slides.md": "---\ntitle: Slides\n---\nSlide content.\n",
+            "docs/talk/other.md": "---\ntitle: Other\n---\nOther content.\n",
         }
         for name, content in pages.items():
             path = cls.site / "content" / name
@@ -105,43 +96,17 @@ class RenderLinkTests(unittest.TestCase):
     def _links_on(self, path: str) -> list[tuple[str, str | None]]:
         return parse_links((self.public / path / "index.html").read_text())
 
-    def test_static_html_link_not_rewritten(self):
-        """A link to a .html static file must be left exactly as authored."""
+    def test_rendered_links(self):
+        """Each case resolves or stays static as configured."""
+        cases = (
+            ("static html", "https://docs.example.com/docs/talk/slides.html", None),
+            ("relative md", "/docs/talk/other/#relative", None),
+            ("absolute own-host md", "/docs/talk/other/#absolute", None),
+            ("external", "https://example.org/page.html", "_blank"),
+        )
         links = self._links_on("docs/talk")
-        hrefs = [href for href, _ in links]
-        with self.subTest("contains original .html href"):
-            self.assertIn("https://docs.example.com/docs/talk/slides.html", hrefs)
-        with self.subTest("does not rewrite to hugo page"):
-            self.assertNotIn("/docs/talk/slides/", hrefs)
-
-    def test_relative_md_link_resolved(self):
-        """A relative .md link must be resolved to the Hugo page URL."""
-        links = self._links_on("docs/talk")
-        hrefs = [href for href, _ in links]
-        with self.subTest("other.md resolves to /docs/talk/other/"):
-            self.assertIn("/docs/talk/other/", hrefs)
-
-    def test_absolute_own_host_md_link_resolved(self):
-        """An absolute hummingbird-project.io .md link must resolve to the local page URL."""
-        links = self._links_on("docs/talk")
-        hrefs = [href for href, _ in links]
-        with self.subTest("absolute .md link resolves to /docs/talk/other/"):
-            self.assertIn("/docs/talk/other/", hrefs)
-
-    def test_external_link_has_target_blank(self):
-        """An external link to a different host must carry target=_blank."""
-        links = self._links_on("docs/talk")
-        for href, target in links:
-            if href == "https://example.org/page.html":
-                with self.subTest("target is _blank"):
-                    self.assertEqual(target, "_blank")
-                return
-        self.fail("External link not found in rendered output")
-
-    def test_internal_links_no_target_blank(self):
-        """Resolved internal links must not carry target=_blank."""
-        links = self._links_on("docs/talk")
-        for href, target in links:
-            if href in ("/docs/talk/other/", "https://docs.example.com/docs/talk/slides.html"):
-                with self.subTest(href=href):
-                    self.assertNotEqual(target, "_blank")
+        for label, href, target in cases:
+            with self.subTest(case=label):
+                self.assertIn((href, target), links)
+        with self.subTest("static html not rewritten to a page"):
+            self.assertNotIn("/docs/talk/slides/", [href for href, _ in links])
