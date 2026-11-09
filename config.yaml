@@ -71,6 +71,15 @@ imaging:
   webp:
     quality: 75
 
+# Honor HTTP(S)_PROXY/NO_PROXY in resources.GetRemote. Off by default in Hugo
+# because a proxy hides the resolved destination from the security policy;
+# without it, build-time remote fetches (Docsy's mermaid version check) dial
+# the CDN directly and hit the runner-cluster egress firewall whenever the
+# CDN's DNS answers outside the allowlisted ranges.
+security:
+  http:
+    proxyFromEnvironment: true
+
 markup:
   goldmark:
     renderer:
