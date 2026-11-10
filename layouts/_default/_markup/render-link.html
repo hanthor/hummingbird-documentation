@@ -27,8 +27,8 @@
           {{- end -}}
         {{- end -}}
       {{- end -}}
-    {{- else -}}
-      {{- /* Try direct path lookup */ -}}
+    {{- else if in (slice "" ".md") (path.Ext $url.Path) -}}
+      {{- /* Try direct path lookup; skip static files such as .html and .pdf */ -}}
       {{- with .Page.GetPage $url.Path -}}
         {{- $link = printf "%s%s" .RelPermalink $fragment -}}
       {{- end -}}
@@ -36,7 +36,7 @@
   {{- end -}}
 {{- else -}}
   {{- $url := urls.Parse .Destination -}}
-  {{- if $url.Path -}}
+  {{- if and $url.Path (in (slice "" ".md") (path.Ext $url.Path)) -}}
     {{- $fragment := "" -}}
     {{- with $url.Fragment }}{{ $fragment = printf "#%s" . }}{{ end -}}
     {{- with .Page.GetPage $url.Path }}{{ $link = printf "%s%s" .RelPermalink $fragment }}{{ end -}}
