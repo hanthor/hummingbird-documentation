@@ -312,7 +312,10 @@ repository's own pipeline. The containers, rpms, tools, and
 pipelines/k8s-test-pipeline repositories each have a `check-afdocs` job that
 builds this site with the merge request's working tree mounted in place of the
 published module, then runs the same agent-friendly docs (afdocs) suite the
-documentation repository runs on its own merge requests.
+documentation repository runs on its own merge requests. The infrastructure
+repository has the equivalent job for the internal documentation site
+(`check-afdocs-internal-docs`), which also covers the internal documentation
+mounted from that repository.
 
 - The job runs automatically when a merge request changes a path the site
   mounts, and is available as an optional manual job otherwise.
