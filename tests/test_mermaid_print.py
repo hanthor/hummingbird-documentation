@@ -35,6 +35,11 @@ title = "Mermaid print tests"
 theme = ["github.com/google/docsy/theme"]
 disableKinds = ["taxonomy", "term", "RSS", "sitemap"]
 
+[security.http]
+# match config.yaml: route resources.GetRemote through HTTP(S)_PROXY so the
+# mermaid CDN fetch works on the proxied runner clusters
+proxyFromEnvironment = true
+
 [outputs]
 home = ["HTML"]
 section = ["HTML", "print"]
