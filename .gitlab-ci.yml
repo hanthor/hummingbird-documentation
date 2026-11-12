@@ -68,7 +68,7 @@ check-afdocs:
     - !reference [.rules, mr]
 
 build:
-  tags: [hum-1cpu-512m]
+  tags: [hum-1cpu-1gi]
   script:
     - |
       make setup-host
