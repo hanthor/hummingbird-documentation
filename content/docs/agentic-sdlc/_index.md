@@ -245,7 +245,7 @@ investment that is already paying off, with optionality for more.
 [hum-687]: https://redhat.atlassian.net/browse/HUM-687
 [containers-repo]: https://gitlab.com/redhat/hummingbird/containers
 [rpms-repo]: https://gitlab.com/redhat/hummingbird/rpms
-[hummingbird-agent-docs]: https://hummingbird-project.io/docs/background/tools/hummingbird-agent-design/
+[hummingbird-agent-docs]: https://hummingbird-project.io/l/agent-design
 [failure-analysis-workflow]: https://gitlab.com/redhat/hummingbird/tools/-/blob/main/hummingbird-agent/workflows/analyze-failures.md
 [code-review-workflow]: https://gitlab.com/redhat/hummingbird/tools/-/blob/main/hummingbird-agent/workflows/code-review.md
 [vrothberg-article-linkedin]: https://www.linkedin.com/pulse/from-pair-programmer-autonomous-agent-how-actually-adopt-rothberg-qdyqe/
