@@ -40,12 +40,27 @@ Documentation content comes from six repositories:
    - `CONTRIBUTING.md` - Contributing guide for RPM packages
 
 3. **[Tools repository][tools-repo]** -
-   Documentation for infrastructure tools and services (per-component layout):
-   - `documentation/` - One page per tool/service (flat structure)
+   Documentation for infrastructure tools and services (cross-cutting layout):
+   - `documentation/background/` - Cross-cutting architecture (message bus, data flow,
+     artifact promotion, shared contracts) and team workflow guides
+   - `documentation/components/` - One page per tool or service; components with design
+     docs or DDRs are page bundles: a directory with `_index.md` as the main page plus
+     child pages like `design.md`/`design-decisions.md`
+   - `documentation/operating/` - Operator runbooks for tools and services
+
+   The `contributing/` and `using/` mounts are pre-provisioned for future use but
+   unused for now; the shared Contributing section is currently containers-scoped, so
+   the team workflow guides stay in `background/`.
+
+   A transitional flat mount keeps serving the repository's current `documentation/`
+   directory until the split into section subdirectories lands.
 
 4. **[K8s test pipeline repository][k8s-test-pipeline-repo]** -
    Documentation for Kubernetes integration testing (per-component layout):
    - `documentation/` - Pipeline design, test format, and EaaS debugging
+
+   Section mounts are pre-provisioned for a future split into the standard
+   subdirectories.
 
 5. **[Public documentation repository][docs-repo]** -
    Site infrastructure and cross-cutting guides:
@@ -89,13 +104,31 @@ module:
       mounts:
         - {source: 'CONTRIBUTING.md', target: content/snippets/rpms-contributing.md}
         - {source: 'documentation/background', target: content/docs/background/rpms, files: "*.md"}
+        - {source: 'documentation/contributing', target: content/docs/contributing, files: "*.md"}
         - {source: 'documentation/operating', target: content/docs/operating, files: "*.md"}
+        - {source: 'documentation/using', target: content/docs/using, files: "*.md"}
     - path: gitlab.com/redhat/hummingbird/tools
       mounts:
+        # Transitional: serves the current flat layout until the tools
+        # repository splits its documentation/ into section subdirs.
         - {source: 'documentation', target: content/docs/background/tools, files: "*.md"}
+        - {source: 'documentation/background', target: content/docs/background/tools, files: "*.md"}
+        # Per-component page bundles: multi-file components are branch
+        # bundles (_index.md + child pages); the recursive glob plus the
+        # shared target keeps each component's main-page URL flat.
+        - {source: 'documentation/components', target: content/docs/background/tools, files: ["*.md", "**/*.md"]}
+        - {source: 'documentation/contributing', target: content/docs/contributing, files: "*.md"}
+        - {source: 'documentation/operating', target: content/docs/operating, files: "*.md"}
+        - {source: 'documentation/using', target: content/docs/using, files: "*.md"}
     - path: gitlab.com/redhat/hummingbird/pipelines/k8s-test-pipeline
       mounts:
+        # Serves the current flat layout; the section mounts below are
+        # ready for whenever the repository adopts the standard subdirs.
         - {source: 'documentation', target: content/docs/background/k8s-test-pipeline, files: "*.md"}
+        - {source: 'documentation/background', target: content/docs/background/k8s-test-pipeline, files: "*.md"}
+        - {source: 'documentation/contributing', target: content/docs/contributing, files: "*.md"}
+        - {source: 'documentation/operating', target: content/docs/operating, files: "*.md"}
+        - {source: 'documentation/using', target: content/docs/using, files: "*.md"}
 ```
 
 For README.md and CONTRIBUTING.md, front matter is provided via wrapper files.
@@ -106,7 +139,7 @@ This creates a unified documentation site from multiple repositories without dup
 
 Source repositories use one of two layout patterns depending on their content:
 
-**Cross-cutting layout** (containers, rpms): The repository documents cross-cutting
+**Cross-cutting layout** (containers, rpms, tools): The repository documents cross-cutting
 concerns like contributing, operating, and background information. Documentation is
 organized into subdirectories matching the site sections:
 
@@ -116,15 +149,28 @@ organized into subdirectories matching the site sections:
 - `documentation/using/` - End-user guides
 
 Each subdirectory is mounted into the matching site section, so operating docs from
-different repositories appear together under Operating.
+different repositories appear together under Operating. Not every repository uses every
+subdirectory: the tools repository keeps its team workflow guides in `background/` (the
+shared Contributing section is currently containers-scoped) and leaves `contributing/`
+and `using/` to the pre-provisioned mounts, unused for now.
 
-**Per-component layout** (tools, k8s-test-pipeline): The repository is a monorepo where
+The tools repository combines the cross-cutting sections with per-component page bundles
+inside `components/`: one page per component, and components with design docs or DDRs
+become bundles — a directory with `_index.md` as the main page plus child pages like
+`design.md` or `design-decisions.md`. The recursive `components` mount targets the same
+`content/docs/background/tools` path as the other background mounts, so a bundle's main
+page keeps a flat URL (`/docs/background/tools/<component>/`) while its child pages nest
+one level below it (`/docs/background/tools/<component>/design/`).
+
+**Per-component layout** (k8s-test-pipeline): The repository is a monorepo where
 each documentation page covers one tool or component. Documentation is a flat directory
 with one file per component:
 
 - `documentation/<component-name>.md`
 
-The entire directory is mounted under `background/<repo-name>/` on the site.
+The entire directory is mounted under `background/<repo-name>/` on the site. Section
+mounts for the standard subdirectories are pre-provisioned in the site configuration,
+so the repository can adopt the cross-cutting layout without further site changes.
 
 ## Getting Started
 
@@ -244,6 +290,21 @@ sections in all repositories:
 - Stable even when files are moved or reorganized
 - Clear and explicit about which page is being referenced
 
+### URL Stability
+
+Documentation URLs (for example, `/docs/background/tools/page/`) are **not stable**.
+They change whenever content is reorganized, and a moved page's previous URL returns a
+404 by design.
+
+Only `/l/` aliases are stable and guaranteed to keep resolving. Use them for any
+reference that must survive reorganization:
+
+- Cross-repository links
+- Cross-section links
+- Merge request comments
+- Scripts
+- Bookmarks
+
 ### Link Render Hook
 
 The documentation site includes a custom link render hook
@@ -263,6 +324,14 @@ everywhere, and optimized relative links in the rendered site.
 
 1. **Incoming links from external sources** (documentation, scripts, merge request comments)
 2. **Cross-references within documentation** (across sections or repositories)
+
+### Stability Policy
+
+Only `/l/` aliases are stable and guaranteed to keep resolving. Documentation URLs change
+whenever content is reorganized, and a moved page's previous URL returns a 404 by design.
+
+Never add an alias for a page's previous URL after a move — aliases are curated stable
+links, not a redirect backlog.
 
 ### Adding an Alias
 
