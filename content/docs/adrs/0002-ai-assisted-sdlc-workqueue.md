@@ -706,7 +706,7 @@ Known consequences of any workqueue approach:
 [hum-857]: https://redhat.atlassian.net/browse/HUM-857
 [hum-858]: https://redhat.atlassian.net/browse/HUM-858
 [hum-859]: https://redhat.atlassian.net/browse/HUM-859
-[hummingbird-agent-docs]: https://hummingbird-project.io/docs/background/tools/hummingbird-agent-design/
+[hummingbird-agent-docs]: https://hummingbird-project.io/l/agent-design
 [image-pipeline]: https://gitlab.com/redhat/hummingbird/containers/-/blob/main/documentation/background/image-pipeline.md
 [infra-agent]: https://gitlab.com/redhat/hummingbird/infrastructure/-/tree/main/kubernetes/hummingbird-agent
 [infra-agent-aws]: https://gitlab.com/redhat/hummingbird/infrastructure/-/tree/main/aws/hummingbird-agent
