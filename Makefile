@@ -58,8 +58,9 @@ AFDOCS_CHECKS := llms-txt-exists,llms-txt-valid,llms-txt-size,llms-txt-links-res
 
 .PHONY: check-afdocs-host check-afdocs
 check-afdocs-host:
+	hugo -d public_afdocs -b http://localhost:1313 --cleanDestinationDir
 	trap 'kill %1 2>/dev/null' EXIT; \
-	hugo serve --bind 0.0.0.0 & \
+	python3 scripts/serve_redirects.py public_afdocs 1313 & \
 	for i in $$(seq 1 60); do curl -sf http://localhost:1313 >/dev/null 2>&1 && break; sleep 1; done; \
 	npx --yes afdocs check http://localhost:1313 \
 	  --canonical-origin https://hummingbird-project.io \
