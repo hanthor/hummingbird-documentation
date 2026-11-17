@@ -41,19 +41,16 @@ Documentation content comes from six repositories:
 
 3. **[Tools repository][tools-repo]** -
    Documentation for infrastructure tools and services (cross-cutting layout):
-   - `documentation/background/` - Cross-cutting architecture (message bus, data flow,
-     artifact promotion, shared contracts) and team workflow guides
+   - `documentation/background/` - Cross-cutting pages: architecture (message bus, data
+     flow, artifact promotion, shared contracts) and team workflow guides
    - `documentation/components/` - One page per tool or service; components with design
      docs or DDRs are page bundles: a directory with `_index.md` as the main page plus
      child pages like `design.md`/`design-decisions.md`
    - `documentation/operating/` - Operator runbooks for tools and services
 
-   The `contributing/` and `using/` mounts are pre-provisioned for future use but
-   unused for now; the shared Contributing section is currently containers-scoped, so
-   the team workflow guides stay in `background/`.
-
-   A transitional flat mount keeps serving the repository's current `documentation/`
-   directory until the split into section subdirectories lands.
+   The `contributing/` and `using/` mounts are pre-provisioned for future use; the
+   shared Contributing section is containers-scoped, so the team workflow guides live
+   in `background/`.
 
 4. **[K8s test pipeline repository][k8s-test-pipeline-repo]** -
    Documentation for Kubernetes integration testing (per-component layout):
@@ -109,9 +106,6 @@ module:
         - {source: 'documentation/using', target: content/docs/using, files: "*.md"}
     - path: gitlab.com/redhat/hummingbird/tools
       mounts:
-        # Transitional: serves the current flat layout until the tools
-        # repository splits its documentation/ into section subdirs.
-        - {source: 'documentation', target: content/docs/background/tools, files: "*.md"}
         - {source: 'documentation/background', target: content/docs/background/tools, files: "*.md"}
         # Per-component page bundles: multi-file components are branch
         # bundles (_index.md + child pages); the recursive glob plus the
