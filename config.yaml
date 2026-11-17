@@ -59,9 +59,6 @@ module:
         - {source: 'documentation/using', target: content/docs/using, files: "*.md"}
     - path: gitlab.com/redhat/hummingbird/tools
       mounts:
-        # Transitional: serves the current flat layout until the tools
-        # repository splits its documentation/ into section subdirs.
-        - {source: 'documentation', target: content/docs/background/tools, files: "*.md"}
         - {source: 'documentation/background', target: content/docs/background/tools, files: "*.md"}
         # Per-component page bundles: multi-file components are branch
         # bundles (_index.md + child pages); the recursive glob plus the

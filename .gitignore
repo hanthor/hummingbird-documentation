@@ -1,6 +1,7 @@
 /.hugo_build.lock
 /go.sum
 /public/
+/public_afdocs/
 /resources/
 /.hugo_cache/
 /node_modules/
