@@ -18,7 +18,8 @@ specification does not change anything about that directory.
 The metadata file is the machine-readable record of a package's relationship to Fedora and
 upstream. Automation reads it to decide what it may do: whether `dist_git.py update` may
 overwrite the package directory, which upstream project `check_upstream_versions.py` tracks, and
-how CVE analysis maps the package to its upstream identity.
+how CVE analysis maps the package to its upstream identity. The optional `private_product` field
+records a product assignment for Hummingbird's internal use.
 
 The metadata file does not duplicate build inputs, and it does not record the release currently
 shipped: the spec's `Release:` line is the sole authoritative value for what ships, and is what
@@ -71,9 +72,9 @@ consumed by tooling in the rpms repository, not only the fields that determine `
 or the Fedora relationship. Fields are listed in four groups, in order: package identity and state
 (`version` through `modification_reason`), the Fedora-origin group (`fedora` and its sub-fields),
 fields that configure upstream-version tracking, and fields unrelated to either Fedora or upstream
-tracking (`cve_product`, `version_transform`, `fix_status`). The "Presence" column states the
-condition under which a field appears in the JSON; fields are omitted entirely rather than set to
-`null` or an empty value when their condition does not hold.
+tracking (`private_product`, `cve_product`, `version_transform`, `fix_status`). The "Presence"
+column states the condition under which a field appears in the JSON; fields are omitted entirely
+rather than set to `null` or an empty value when their condition does not hold.
 
 | Field                           | Type                                                   | Presence                                                                                     | Description                                                                                                                                                                                                                                                    |
 | ------------------------------- | ------------------------------------------------------ | -------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -95,9 +96,19 @@ condition under which a field appears in the JSON; fields are omitted entirely r
 | `version_suffix_strip`          | string                                                 | Optional; independent of state                                                               | A suffix `check_upstream_versions.py` strips from an Anitya-reported version before comparison and update (e.g. `"-RELEASE"`).                                                                                                                                 |
 | `upstream_version_transform`    | string                                                 | Optional; independent of state                                                               | A named transform `check_upstream_versions.py` applies to normalize an Anitya-reported version into RPM version syntax (e.g. `openjdk_to_rpm`). A distinct field from `version_transform` below, with a different consumer. Do not conflate the two.           |
 | `source_availability_check`     | string                                                 | Optional; independent of state                                                               | A named checker (registered in `SOURCE_AVAILABILITY_CHECKERS`) that HEAD-probes a candidate source URL before `check_upstream_versions.py` accepts that version.                                                                                               |
+| `private_product`               | string                                                 | Optional; independent of state                                                               | An internal product identifier used for private package distribution. Absent for public packages.                                                                                                                                                              |
 | `cve_product`                   | string, or list of strings                             | Optional; independent of state                                                               | A CVE vendor/product override, independent of Fedora or upstream tracking.                                                                                                                                                                                     |
 | `version_transform`             | string                                                 | Optional; independent of state                                                               | A version-mapping rule consumed by CVE analysis tooling in the `tools` repository (e.g. `dotnet_sdk_to_runtime`). Not consumed by anything in the rpms repository's own `ci/` scripts.                                                                         |
 | `fix_status`                    | integer                                                | Optional; independent of state                                                               | Not consumed by any tooling in the rpms repository today. Carried over from history and likely stale. Not a field to use for new work.                                                                                                                         |
+
+## Private product assignment
+
+`private_product` is an optional, non-empty string identifying a private product, such as
+`nodejs20`, for Hummingbird's internal use. When absent, the package is public. The field is valid
+in every package state and does not change the package's relationship to Fedora or its versioning
+behavior.
+
+[ADR-0004][adr-0004] describes the tooling behavior and implementation requirements.
 
 ## Computing the built NVR
 
@@ -178,6 +189,7 @@ implement each line as a direct check with nothing left to interpret.
 21. The spec's `Version:` line, resolved through macro expansion, equals metadata `version`.
 22. If `version_from_ref` is present, `upstream_repo` is present.
 23. `version_from_ref.type`, when present, is `commit-date`.
+24. `private_product`, when present, is a non-empty string.
 
 ## Examples
 
@@ -248,13 +260,25 @@ Metadata for an `independent` package:
 No `fedora` object and no release-related field. The release currently shipped lives only in
 that package's spec `Release:` line.
 
+For a package assigned to the private `nodejs20` product, its metadata includes this field:
+
+```json
+{
+  "private_product": "nodejs20"
+}
+```
+
+This is a partial record; all fields required by the package's state remain required.
+
 ## Change history
 
 Record contract changes here with a reference to the ADR that approved each change.
 
-| Date       | Change                                                                            | Decision             |
-| ---------- | --------------------------------------------------------------------------------- | -------------------- |
-| 2026-11-17 | Extracted the specification from ADR-0003 without changing the metadata contract. | [ADR-0003][adr-0003] |
+| Date       | Change                                                                                        | Decision               |
+| ---------- | --------------------------------------------------------------------------------------------- | ---------------------- |
+| 2026-11-17 | Extracted the specification from ADR-0003 without changing the metadata contract.             | [ADR-0003][adr-0003]   |
+| 2026-11-18 | Added optional `private_product` metadata for internal product classification.                | [ADR-0004][adr-0004]   |
 
 [adr-0003]: ../adrs/0003-metadata-and-versioning.md
+[adr-0004]: ../adrs/0004-private-product-metadata.md
 [built-nvr]: #computing-the-built-nvr
